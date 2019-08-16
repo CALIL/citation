@@ -7,6 +7,12 @@ Wikipediaのダンプファイルから出典ISBNを抽出するツール
 - [Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)から出典ISBNを抽出します
 - 抽出したデータはLine-delimited JSON形式で保存します
 
+依存パッケージのインストール
+----
+```json
+pipenv install
+```
+
 コマンドライン
 ----
 ```json
