@@ -17,7 +17,7 @@ pipenv install
 ----
 ```json
 wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz
-pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.json
+pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
 ```
 
 抽出されるデータ例
@@ -39,3 +39,12 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 - score (float) ... 独自指標により算出されたISBNの正確さ（スコアが低い場合は、誤って検出した場合がある）
 - authority (boolean) ... 出典であることが明記されているか（作品リストなどではfalse）
 
+処理済みのデータ
+----
+
+| ダンプ | 処理データ |
+| ---- | ---- |
+| [jawiki-20190420-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190420.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190420.jsonl) |
+| [jawiki-20190801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190801/jawiki-20190801-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190801.jsonl) |
+
+[保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation)
