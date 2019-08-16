@@ -47,5 +47,5 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | [jawiki-20190420-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190420.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190420.jsonl) | 672,155 |
 | [jawiki-20190801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190801/jawiki-20190801-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190801.jsonl) | 688,393 |
 
--[Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
--[保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation)
+- [Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
+- [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation)
