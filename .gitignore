@@ -2,5 +2,5 @@
 .idea/
 node_modules/
 build/
-/jawiki*
-citation_ja.json
+/jawiki-*
+/citation-*

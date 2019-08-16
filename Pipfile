@@ -7,10 +7,7 @@ verify_ssl = true
 
 [packages]
 click = "*"
-ujson = "*"
 isbnlib = "*"
-tqdm = "*"
-requests = "*"
 colorama = "*"
 halo = "*"
 
