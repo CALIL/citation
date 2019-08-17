@@ -4,9 +4,9 @@ Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
 概要
 -----
-- 日本語版Wikipediaのダンプから出典ISBNを抽出します
-- 抽出したデータはLine-delimited JSON形式で保存します
-- ある程度の表記ゆれを吸収します
+- 日本語版Wikipediaのダンプから出典ISBNを抽出する
+- 抽出したデータはLine-delimited JSON形式で保存
+- ある程度の表記ゆれを吸収
 
 依存パッケージのインストール
 ----
@@ -57,3 +57,8 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 
 - [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
 - [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
+
+注意事項
+----
+- チェックデジットの一致により、ISBN以外を誤判定する場合があります。ただし、ISBNから参照記事を検索する目的では問題とならないため許容しています
+- チェックデジット間違いのISBNは抽出されません
