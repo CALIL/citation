@@ -16,6 +16,9 @@ pipenv install
 
 コマンドライン
 ----
+
+pipenv run python citation.py [INPUT] [OUTPUT]
+
 ```json
 wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz
 pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
