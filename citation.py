@@ -138,17 +138,18 @@ def extract_citation(input_filename, export_filename, show_exclusion):
                             score += 0.5
                         if score >= 1.0:
                             count_isbn += 1
-                            if line.find("&lt;ref") != -1:
+                            if line.find("&lt;ref") != -1 or line.find("{Cite book") != -1:
                                 is_ref = True
                                 score += 0.5
                             else:
                                 is_ref = False
                             if topic1:
-                                if topic1 == "作品リスト":
+                                if topic1 in ["作品リスト", "作品"]:
                                     is_ref = False
                                     score -= 0.5
-                                if topic1 == "典拠・資料" or topic1 == "脚注および参考文献" or topic1 == "参考図書" or topic1 == "主な文献" or topic1 == "参照資料" or topic1 == "典拠・資料" or topic1 == "関連図書" or topic1 == "参考書籍" or topic1 == "参考文献" or topic1 == "参考資料" or topic1.find(
-                                        "関連文献") == 0 or topic1 == "関連書籍" or topic1 == "文献" or topic1 == "出典" or topic2 == "参照文献":
+                                if (topic1 in ["典拠・資料", "脚注", "脚注および参考文献", "参考図書", "主な文献", "参照資料",
+                                               "関連図書", "参考書籍", "参考文献", "参考資料",
+                                               "関連書籍", "文献", "出典", "参照文献"]) or topic1.find("関連文献") == 0:
                                     is_ref = True
                                     score += 0.5
                             item = {'isbn': isbnlib.to_isbn10(_isbn),
@@ -157,7 +158,7 @@ def extract_citation(input_filename, export_filename, show_exclusion):
                                     'score': score,
                                     'h1': topic1,
                                     'h2': topic2,
-                                    'authority': is_ref}
+                                    'is_ref': is_ref}
                             f.write(json.dumps(item, ensure_ascii=False) + '\n')
                         else:
                             count_error += 1

@@ -31,7 +31,7 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
    "score":2.9,
    "h1":"参考文献",
    "h2":null,
-   "authority":true
+   "is_ref":true
 }
 ```
 
@@ -43,7 +43,7 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | score | Number | 独自指標により算出されたISBNの正確さ<br>（スコアが低い場合は、誤って検出した場合がある） |
 | h1 | String/null | 見出し1 |
 | h2 | String/null | 見出し2 |
-| authority | Boolean | 出典であることが明記されているか（作品リストなどではfalse） |
+| is_ref | Boolean | 出典であることが明記されているか（作品リストなどではfalse） |
 
 処理済みのデータ
 ----
@@ -51,7 +51,8 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | ダンプ | 処理データ | 件数 |
 | ---- | ---- | ----: |
 | [jawiki-20190420-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190420.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190420.jsonl) | 672,155 |
+| [jawiki-20190601-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190601/jawiki-20190601-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190601.jsonl) | 679,440 |
 | [jawiki-20190801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190801/jawiki-20190801-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20190801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190801.jsonl) | 688,393 |
 
 - [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
-- [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation)
+- [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
