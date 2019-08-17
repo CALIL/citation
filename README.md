@@ -45,7 +45,7 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | h2 | String/null | 見出し2 |
 | is_ref | Boolean | 出典であることが明記されているか（作品リストなどではfalse） |
 
-処理済みのデータ
+処理済みデータのダウンロード
 ----
 
 | ダンプ | 処理データ | 件数 |
