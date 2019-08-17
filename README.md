@@ -4,7 +4,7 @@ Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
 概要
 -----
-- 日本語版Wikipediaのダンプから出典ISBNを抽出する
+- 日本語版Wikipediaのダンプから出典ISBNを抽出
 - 抽出したデータはLine-delimited JSON形式で保存
 - ある程度の表記ゆれを吸収
 
