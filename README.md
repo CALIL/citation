@@ -1,4 +1,4 @@
-citation (https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/download/releases/3.6.0/) ![t]
+citation [(https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/download/releases/3.6.0/) ![t]
 =========================================================================================================================================================================================
 Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
