@@ -17,9 +17,16 @@ pipenv install
 コマンドライン
 ----
 
-pipenv run python citation.py [INPUT] [OUTPUT]
+```bash
+Usage: citation.py [OPTIONS] INPUT_FILENAME EXPORT_FILENAME
 
-```json
+Options:
+  --show-exclusion / --no-show-exclusion
+                                  除外した項目を表示する
+  --help                          Show this message and exit.
+```
+
+```bash
 wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz
 pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
 ```
