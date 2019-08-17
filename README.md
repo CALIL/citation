@@ -20,7 +20,7 @@ wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-
 pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
 ```
 
-抽出されるデータ例
+抽出されるデータ
 ----
 
 ```json
@@ -35,9 +35,15 @@ pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 }
 ```
 
-- raw ... 解析される元のISBN表記
-- score (float) ... 独自指標により算出されたISBNの正確さ（スコアが低い場合は、誤って検出した場合がある）
-- authority (boolean) ... 出典であることが明記されているか（作品リストなどではfalse）
+| 項目 | 型 | 概要 |
+| ---- | ---- | ---- | 
+| isbn | String | 正規化されたISBN（ISBN-10） |
+| raw | String | 解析される元のISBN表記 |
+| title | String | Wikipediaのページ名 |
+| score | Number | 独自指標により算出されたISBNの正確さ（スコアが低い場合は、誤って検出した場合がある） |
+| h1 | String/null | 見出し1 |
+| h2 | String/null | 見出し2 |
+| authority | Boolean | 出典であることが明記されているか（作品リストなどではfalse） |
 
 処理済みのデータ
 ----
