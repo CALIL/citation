@@ -10,8 +10,8 @@ Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
 依存パッケージのインストール
 ----
-```json
-pipenv install
+```bash
+poetry install
 ```
 
 コマンドライン
@@ -28,7 +28,7 @@ Options:
 
 ```bash
 wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz
-pipenv run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
+poetry run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2 citation-jawiki-20190420.jsonl
 ```
 
 抽出されるデータ

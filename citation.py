@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 __title__ = 'Wikipedia Citation Extractor'
-__copyright__ = "Copyright (C) 2019 CALIL Inc."
+__copyright__ = "Copyright (C) 2021 CALIL Inc."
 __author__ = "Ryuuji Yoshimoto <ryuuji@calil.jp>"
 
 import re
