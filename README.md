@@ -69,6 +69,7 @@ poetry run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | [jawiki-20200801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20200801/jawiki-20200801-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20200801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20200801.jsonl) | 763,007 |
 | [jawiki-20201201-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20201201-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20201201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20201201.jsonl) | 788,068 |
 | [jawiki-20210620-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20210620-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20210620.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210620.jsonl) | 839,059 |
+| [jawiki-20210920-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20210920/jawiki-20210920-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20210920.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210920.jsonl) | 864,341 |
 
 - [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
 - [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
