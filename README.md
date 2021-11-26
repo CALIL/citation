@@ -1,4 +1,4 @@
-citation [![](https://img.shields.io/badge/python-3.8+-blue.svg)](https://docs.python.org/3.8/) [![Maintainability](https://api.codeclimate.com/v1/badges/d2ff9760abb138cd70bc/maintainability)](https://codeclimate.com/github/CALIL/citation/maintainability)
+citation [![](https://img.shields.io/badge/python-3.10+-blue.svg)](https://docs.python.org/3.10/) [![Maintainability](https://api.codeclimate.com/v1/badges/d2ff9760abb138cd70bc/maintainability)](https://codeclimate.com/github/CALIL/citation/maintainability)
 =========================================================================================================================================================================================
 Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
@@ -70,8 +70,12 @@ poetry run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | [jawiki-20201201-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20201201-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20201201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20201201.jsonl) | 788,068 |
 | [jawiki-20210620-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20210620-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20210620.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210620.jsonl) | 839,059 |
 | [jawiki-20210920-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20210920/jawiki-20210920-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20210920.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210920.jsonl) | 864,341 |
+| [jawiki-20211120-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20211120/jawiki-20211120-pages-articles-multistream.xml.bz2)  | [citation-jawiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20211120.jsonl) | 880,591 |
+| [enwiki-20211120-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20211120/enwiki-20211120-pages-articles-multistream.xml.bz2)  | [citation-enwiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20211120.jsonl) | 5,116,149 |
+
 
 - [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
+- [英語版Wikipediaのダンプ](https://dumps.wikimedia.org/enwiki/)
 - [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
 
 注意事項
