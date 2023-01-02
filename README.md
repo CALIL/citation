@@ -1,4 +1,4 @@
-citation [![](https://img.shields.io/badge/python-3.10+-blue.svg)](https://docs.python.org/3.10/) [![Maintainability](https://api.codeclimate.com/v1/badges/d2ff9760abb138cd70bc/maintainability)](https://codeclimate.com/github/CALIL/citation/maintainability)
+citation [![](https://img.shields.io/badge/python-3.11+-blue.svg)](https://docs.python.org/3.11/) [![Maintainability](https://api.codeclimate.com/v1/badges/d2ff9760abb138cd70bc/maintainability)](https://codeclimate.com/github/CALIL/citation/maintainability)
 =========================================================================================================================================================================================
 Wikipediaのダンプファイルから出典ISBNを抽出するツール
 
