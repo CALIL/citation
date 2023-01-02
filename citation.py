@@ -1,5 +1,5 @@
 __title__ = 'Wikipedia Citation Extractor'
-__copyright__ = "Copyright (C) 2021 CALIL Inc."
+__copyright__ = "Copyright (C) 2023 CALIL Inc."
 __author__ = "Ryuuji Yoshimoto <ryuuji@calil.jp>"
 
 import re
