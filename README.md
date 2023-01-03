@@ -75,7 +75,7 @@ poetry run python citation.py jawiki-20190420-pages-articles-multistream.xml.bz2
 | [jawiki-20221220-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20221220/jawiki-20221220-pages-articles-multistream.xml.bz2) | [citation-jawiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20221220.jsonl) |   970,869 |
 | [enwiki-20221220-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20221220/enwiki-20221220-pages-articles-multistream.xml.bz2)  | [citation-enwiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20221220.jsonl) | 5,116,149 |
 
-- [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)粗悪
+- [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
 - [英語版Wikipediaのダンプ](https://dumps.wikimedia.org/enwiki/)
 - [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
 
