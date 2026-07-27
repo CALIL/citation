@@ -9,6 +9,7 @@
 {"isbn": "4772212272", "raw": "477221227200", "title": "ISBNパターン網羅", "score": 1.4, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "477221227400", "title": "ISBNパターン網羅", "score": 1.4, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "772-212272", "title": "ISBNパターン網羅", "score": 1.4, "h1": null, "h2": null, "is_ref": false}
+{"isbn": "4772212272", "raw": "9789784772212274", "title": "ISBNパターン網羅", "score": 1.4, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "プレフィックス表記ゆれ", "score": 2.4, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "978-4-7722-1227-4", "title": "プレフィックス表記ゆれ", "score": 1.9, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "プレフィックス表記ゆれ", "score": 2.4, "h1": null, "h2": null, "is_ref": false}

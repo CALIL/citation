@@ -67,15 +67,14 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
     if prefix:  # ISBNの記述があった場合は信頼
         score += 0.9
 
-    # NOTE: 到達不能。"978" が二重に付いた16桁を救う意図だが、is_isbn13() は13桁を
-    # 要求するのに対し isbn[6:16] は必ず10桁になるため条件が成立しない。
-    # 挙動を変えないよう現状のまま残している（KNOWN_ISSUES.md 参照）。
-    if length == 16 and isbn.startswith("978978") and isbnlib.is_isbn13(isbn[6:16]):
+    # "978" を重ねて書いてしまった16桁。先頭の3桁を捨てるとISBN-13になる。
+    # NOTE: 実データでこの表記は見つかっていない（jawiki 3,000ページと
+    # enwiki 49,965ページの16桁候補2,596件を調べて0件）。
+    if length == 16 and isbn.startswith("978978") and isbnlib.is_isbn13(isbn[3:16]):
         pattern = "I13(978978Cut)"
         score += 0.5
-        isbn = isbn[6:16]
-
-    if length == 10:
+        isbn = isbn[3:16]
+    elif length == 10:
         if isbnlib.is_isbn10(isbn):
             pattern = "I10"
             score += 0.5

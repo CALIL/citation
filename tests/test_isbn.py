@@ -22,6 +22,7 @@ PATTERNS = [
     ("477221227200", "I10(Cut10)", "4772212272", 1.4),
     ("477221227400", "I13(Cut10_978+)", "9784772212274", 1.4),
     ("772-212272", "I10(4+)", "4772212272", 1.4),
+    ("9789784772212274", "I13(978978Cut)", "9784772212274", 1.4),
     ("4910123456789", "雑誌コード", "4910123456789", -1),
 ]
 
@@ -34,13 +35,14 @@ def test_各パターンが判定される(raw: str, pattern: str, isbn: str, sc
     assert result.score == pytest.approx(score)
 
 
-def test_到達可能な全パターンを網羅している() -> None:
+def test_全パターンを網羅している() -> None:
     """PATTERNSが取りこぼしなく分岐を覆っていること。"""
     covered = {pattern for _, pattern, _, _ in PATTERNS}
     assert covered == {
         "I10",
         "I13",
         "I13(978+)",
+        "I13(978978Cut)",
         "I10(978-)",
         "I13(97+)",
         "I13(Cut13)",
@@ -50,13 +52,6 @@ def test_到達可能な全パターンを網羅している() -> None:
         "I10(4+)",
         "雑誌コード",
     }
-
-
-def test_978が二重の16桁は判定できない() -> None:
-    """ "I13(978978Cut)" は到達不能な分岐（KNOWN_ISSUES.md 参照）。"""
-    result = normalize_isbn("ISBN ", "9789789784772212274")
-    assert result.pattern == UNKNOWN
-    assert not result.adopted
 
 
 def test_接頭辞がないとスコアが0_9低い() -> None:
