@@ -16,6 +16,11 @@ PAGE_START = "  <page>\n"
 
 TITLE_RE = re.compile(r"<title>([^<]*)</title>")
 
+NS_RE = re.compile(r"<ns>(\d+)</ns>")
+
+#: 記事の名前空間。Wikipedia: や Help: などはこれ以外の値を持つ。
+ARTICLE_NAMESPACE = "0"
+
 #: 出典であることを示すrefタグ。ダンプ内ではXMLエスケープされている。
 REF_TAG = "&lt;ref"
 
@@ -47,6 +52,7 @@ class Extractor:
         self._title: str | None = None
         self._h1: str | None = None
         self._h2: str | None = None
+        self._skip_page = False
 
     def extract(self, lines: Iterable[str]) -> Iterator[Record]:
         """行を順に読み、採用されたISBNをレコードとして返す。"""
@@ -57,15 +63,25 @@ class Extractor:
                 self._title = None
                 self._h1 = None
                 self._h2 = None
+                self._skip_page = False
                 self.pages += 1
             elif not self._title:
                 for title in TITLE_RE.findall(line):
                     self._title = title
-            else:
+            elif not self._skip_page:
                 yield from self._scan(line)
 
     def _scan(self, line: str) -> Iterator[Record]:
         """本文1行からISBNを拾う。"""
+        # 名前空間はタイトルの直後に現れる。記事以外（Wikipedia:、Help:、Template:
+        # など）はこのページごと読み飛ばす。<ns> を持たない古い形式のダンプでは
+        # この行が現れないため、従来どおり全ページが対象になる。
+        if "<ns>" in line:
+            namespace = NS_RE.search(line)
+            if namespace is not None:
+                self._skip_page = namespace.group(1) != ARTICLE_NAMESPACE
+                return
+
         self._track_heading(line)
 
         # NOTE: 3語すべてを含む行を読み飛ばす条件になっており、ISBNの記述が無い行を

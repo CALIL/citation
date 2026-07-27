@@ -103,10 +103,35 @@ def test_978で始まるISBN10も変換できる() -> None:
     assert record.raw == "9780000003"
 
 
-def test_記事以外の名前空間も抽出対象になる() -> None:
-    """<ns> を見ていないため Wikipedia: なども対象になる（KNOWN_ISSUES.md 参照）。"""
-    records = extract(dump_page("Wikipedia:井戸端", ["* ISBN 4-7722-1227-2"], ns="4"))
-    assert len(records) == 1
+@pytest.mark.parametrize("ns", ["4", "10", "12", "100"])
+def test_記事以外の名前空間は読み飛ばす(ns: str) -> None:
+    assert extract(dump_page("Wikipedia:井戸端", ["* ISBN 4-7722-1227-2"], ns=ns)) == []
+
+
+def test_記事の名前空間は抽出する() -> None:
+    assert len(extract(dump_page("地理学", ["* ISBN 4-7722-1227-2"], ns="0"))) == 1
+
+
+def test_名前空間を読み飛ばしても次のページは処理する() -> None:
+    lines = dump_page("Wikipedia:井戸端", ["* ISBN 4-7722-1227-2"], ns="4")
+    lines += dump_page("地理学", ["* ISBN 4-7722-1227-2"], ns="0")
+    records = extract(lines)
+    assert [r.title for r in records] == ["地理学"]
+
+
+def test_名前空間の行がなくても抽出する() -> None:
+    """<ns> を持たない古い形式のダンプでも従来どおり動く。"""
+    lines = [
+        "  <page>\n",
+        "    <title>地理学</title>\n",
+        "    <revision>\n",
+        "      <text>\n",
+        "* ISBN 4-7722-1227-2\n",
+        "      </text>\n",
+        "    </revision>\n",
+        "  </page>\n",
+    ]
+    assert len(extract(lines)) == 1
 
 
 def test_ページ数と採否の件数を数える() -> None:
