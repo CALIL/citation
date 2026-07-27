@@ -30,9 +30,10 @@
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "見出しによる補正", "score": 1.9, "h1": "作品", "h2": "深い見出し", "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.4, "h1": "本文", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.4, "h1": "本文", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.4, "h1": "本文", "h2": null, "is_ref": false}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.4, "h1": "本文", "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "History", "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "References", "h2": null, "is_ref": false}

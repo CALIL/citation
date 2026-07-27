@@ -61,12 +61,34 @@ def test_refタグがあれば出典とみなす() -> None:
     assert record.score == pytest.approx(2.9)
 
 
-def test_小文字のciteテンプレートは出典と判定されない() -> None:
-    """`{Cite book` としか比較していないため取りこぼす（KNOWN_ISSUES.md 参照）。"""
-    (upper,) = extract(dump_page("A", ["* {{Cite book|isbn=4-7722-1227-2}}"]))
-    (lower,) = extract(dump_page("A", ["* {{cite book|isbn=4-7722-1227-2}}"]))
-    assert upper.is_ref
-    assert not lower.is_ref
+@pytest.mark.parametrize(
+    "markup",
+    ["{{Cite book", "{{cite book", "{{Cite Book", "{{ cite book", "{{cite  book", "{Cite book"],
+)
+def test_citeテンプレートの表記ゆれを吸収する(markup: str) -> None:
+    (record,) = extract(dump_page("A", ["* " + markup + "|isbn=4-7722-1227-2}}"]))
+    assert record.is_ref
+    assert record.score == pytest.approx(2.9)
+
+
+@pytest.mark.parametrize(
+    "markup",
+    [
+        "{{Citation|title=地理学|isbn=4-7722-1227-2}}",
+        "{{citation|title=地理学|isbn=4-7722-1227-2}}",
+        "{{ Citation |title=地理学|isbn=4-7722-1227-2}}",
+        "{{Citation}} ISBN 4-7722-1227-2",
+    ],
+)
+def test_citationテンプレートも出典とみなす(markup: str) -> None:
+    (record,) = extract(dump_page("A", ["* " + markup]))
+    assert record.is_ref
+
+
+def test_要出典テンプレートは出典とみなさない() -> None:
+    """{{Citation needed}} は出典が無いことを示すマーカーなので区別する。"""
+    (record,) = extract(dump_page("A", ["* {{Citation needed}} ISBN 4-7722-1227-2"]))
+    assert not record.is_ref
 
 
 def test_著作一覧の見出しでは出典とみなさない() -> None:
