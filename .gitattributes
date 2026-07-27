@@ -1,0 +1,5 @@
+# テスト用フィクスチャとゴールデン出力は、環境によってバイト列が変わると
+# ゴールデンテストが成立しないため改行をLFに固定する。
+tests/fixtures/*.xml text eol=lf
+tests/golden/*.jsonl text eol=lf
+tests/golden/*.sha256 text eol=lf
