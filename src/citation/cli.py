@@ -110,7 +110,9 @@ def extract_citation(
         click.echo("\n" + exclusion.format())
 
     with (
-        open(export_filename, "w", encoding="utf-8") as export_file,
+        # newlineを指定しないとWindowsでは "\n" がCRLFに変換され、出力の
+        # バイト列が実行環境によって変わってしまう。
+        open(export_filename, "w", encoding="utf-8", newline="\n") as export_file,
         click.progressbar(length=Path(input_filename).stat().st_size, label="| 抽出") as bar,
     ):
         if parallel:

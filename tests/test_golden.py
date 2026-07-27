@@ -18,6 +18,13 @@ def run_cli(dump: Path, output: Path) -> None:
     assert result.exit_code == 0, result.output
 
 
+def test_出力の改行は実行環境によらずLF(synthetic_dump: Path, tmp_path: Path) -> None:
+    """Windowsで実行してもCRLFにならないこと。"""
+    output = tmp_path / "newline.jsonl"
+    run_cli(synthetic_dump, output)
+    assert b"\r\n" not in output.read_bytes()
+
+
 def test_syntheticの出力がゴールデンと一致する(synthetic_dump: Path, tmp_path: Path) -> None:
     output = tmp_path / "synthetic.jsonl"
     run_cli(synthetic_dump, output)
