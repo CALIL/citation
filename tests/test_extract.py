@@ -91,6 +91,20 @@ def test_要出典テンプレートは出典とみなさない() -> None:
     assert not record.is_ref
 
 
+def test_ISBNの表記ゆれを3つとも含む行も処理する() -> None:
+    """かつて論理が反転した読み飛ばし条件があり、この種の行を取りこぼしていた。"""
+    line = "isbn と ISBN と Isbn の表記ゆれについて ISBN 4-7722-1227-2"
+    (record,) = extract(dump_page("表記ゆれの解説", [line]))
+    assert record.isbn == "4772212272"
+
+
+def test_接頭辞のない裸の数字列も拾う() -> None:
+    """接頭辞なしの検出はREADMEに明記された仕様（KNOWN_ISSUES.md 課題1参照）。"""
+    (record,) = extract(dump_page("裸の表記", ["参考 4-7722-1227-2 を参照"]))
+    assert record.isbn == "4772212272"
+    assert record.score == pytest.approx(1.5)
+
+
 def test_スコアに浮動小数点の誤差が残らない() -> None:
     """0.9 + 0.5 - 0.5 が 0.8999999999999999 にならないこと。"""
     (record,) = extract(dump_page("作品", ["== 作品リスト ==", "* ISBN 0-230-22620-5"]))

@@ -84,12 +84,6 @@ class Extractor:
 
         self._track_heading(line)
 
-        # NOTE: 3語すべてを含む行を読み飛ばす条件になっており、ISBNの記述が無い行を
-        # 早期に弾くという意図とは逆。実測ではヒット0件で何も除外していない。
-        # 挙動を変えないよう現状のまま残している（KNOWN_ISSUES.md 参照）。
-        if line.find("ISBN") != -1 and line.find("isbn") != -1 and line.find("Isbn") != -1:
-            return
-
         for prefix, raw in find_isbn_candidates(line):
             normalized = normalize_isbn(prefix, raw)
             if normalized.adopted:
