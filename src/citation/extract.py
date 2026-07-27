@@ -115,7 +115,11 @@ class Extractor:
             self._h2 = text
 
     def _build_record(self, line: str, raw: str, normalized: NormalizedIsbn) -> Record:
-        """出典らしさの補正を加えてレコードを組み立てる。"""
+        """出典らしさの補正を加えてレコードを組み立てる。
+
+        採用するかどうかの判定は補正前のスコアで済んでいるため、ここでの減点によって
+        出力されるスコアが採用の閾値を下回ることがある。
+        """
         score = normalized.score
 
         is_ref = REF_TAG in line or CITE_TEMPLATE_RE.search(line) is not None
