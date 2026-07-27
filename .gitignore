@@ -4,3 +4,5 @@ node_modules/
 build/
 /jawiki-*
 /citation-*
+*.jsonl
+*.xml.bz2
