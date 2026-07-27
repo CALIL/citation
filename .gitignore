@@ -2,7 +2,20 @@
 .idea/
 node_modules/
 build/
+dist/
 /jawiki-*
+/enwiki-*
 /citation-*
+/baseline-*
 *.jsonl
 *.xml.bz2
+
+# ゴールデン出力は変更が差分として見えるようコミットする。miniダンプ側は
+# サイズが大きいのでハッシュ (tests/golden/mini-jawiki.sha256) だけを置く。
+!tests/golden/synthetic.jsonl
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/

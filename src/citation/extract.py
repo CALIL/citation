@@ -1,0 +1,125 @@
+"""ダンプの行ストリームから出典ISBNを抽出する状態機械。"""
+
+import re
+from collections.abc import Callable, Iterable, Iterator
+
+import isbnlib
+
+from citation.headings import (
+    is_non_reference_heading,
+    is_reference_heading,
+    parse_heading,
+)
+from citation.isbn import NormalizedIsbn, find_isbn_candidates, normalize_isbn
+from citation.record import Exclusion, Record
+
+#: ページの開始行。ダンプのインデントは固定なので完全一致で判定できる。
+PAGE_START = "  <page>\n"
+
+TITLE_RE = re.compile(r"<title>([^<]*)</title>")
+
+#: 出典であることを示す本文中のマークアップ。
+REF_MARKUP = ("&lt;ref", "{Cite book")
+
+#: 除外された候補を受け取るコールバック。
+ExclusionHandler = Callable[[Exclusion], None]
+
+
+class Extractor:
+    """ダンプの行を順に読み、出典ISBNのレコードを生成する。
+
+    ページの開始行でタイトルと見出しの状態をリセットするため、状態はページ内で
+    完結する。ダンプをページ境界で分割して別々に処理しても結果は変わらない。
+    """
+
+    def __init__(self, on_exclusion: ExclusionHandler | None = None) -> None:
+        """:param on_exclusion: 除外された候補を通知するコールバック"""
+        self.pages = 0
+        self.isbn_count = 0
+        self.error_count = 0
+        self._on_exclusion = on_exclusion
+        self._title: str | None = None
+        self._h1: str | None = None
+        self._h2: str | None = None
+
+    def extract(self, lines: Iterable[str]) -> Iterator[Record]:
+        """行を順に読み、採用されたISBNをレコードとして返す。"""
+        for line in lines:
+            if line == "\n":  # 本文の空行。数が多いので先に弾く
+                continue
+            if line == PAGE_START:
+                self._title = None
+                self._h1 = None
+                self._h2 = None
+                self.pages += 1
+            elif not self._title:
+                for title in TITLE_RE.findall(line):
+                    self._title = title
+            else:
+                yield from self._scan(line)
+
+    def _scan(self, line: str) -> Iterator[Record]:
+        """本文1行からISBNを拾う。"""
+        self._track_heading(line)
+
+        # NOTE: 3語すべてを含む行を読み飛ばす条件になっており、ISBNの記述が無い行を
+        # 早期に弾くという意図とは逆。実測ではヒット0件で何も除外していない。
+        # 挙動を変えないよう現状のまま残している（KNOWN_ISSUES.md 参照）。
+        if line.find("ISBN") != -1 and line.find("isbn") != -1 and line.find("Isbn") != -1:
+            return
+
+        for prefix, raw in find_isbn_candidates(line):
+            normalized = normalize_isbn(prefix, raw)
+            if normalized.adopted:
+                self.isbn_count += 1
+                yield self._build_record(line, raw, normalized)
+            else:
+                self.error_count += 1
+                if self._on_exclusion is not None and prefix:
+                    self._on_exclusion(
+                        Exclusion(
+                            pattern=normalized.pattern,
+                            prefix=prefix,
+                            isbn=normalized.isbn,
+                            title=self._title or "",
+                            score=normalized.score,
+                        )
+                    )
+
+    def _track_heading(self, line: str) -> None:
+        """見出し行なら現在の見出し状態を更新する。"""
+        heading = parse_heading(line)
+        if heading is None:
+            return
+        level, text = heading
+        if level == 2:
+            self._h1 = text
+            self._h2 = None
+        else:
+            self._h2 = text
+
+    def _build_record(self, line: str, raw: str, normalized: NormalizedIsbn) -> Record:
+        """出典らしさの補正を加えてレコードを組み立てる。"""
+        score = normalized.score
+
+        is_ref = any(markup in line for markup in REF_MARKUP)
+        if is_ref:
+            score += 0.5
+
+        if self._h1:
+            if is_non_reference_heading(self._h1):
+                is_ref = False
+                score -= 0.5
+            if is_reference_heading(self._h1):
+                is_ref = True
+                score += 0.5
+
+        return Record(
+            isbn=isbnlib.to_isbn10(normalized.isbn),
+            raw=raw.strip(),
+            title=self._title or "",
+            score=score,
+            h1=self._h1,
+            h2=self._h2,
+            is_ref=is_ref,
+        )

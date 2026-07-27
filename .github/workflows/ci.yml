@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: uvのセットアップ
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: 依存パッケージのインストール
+        run: uv sync --locked
+
+      - name: Lint
+        run: uv run ruff check
+
+      - name: フォーマットの確認
+        run: uv run ruff format --check
+
+      # slowマーカーのテストは実ダンプから切り出したフィクスチャを必要とするため、
+      # CIでは実行しない（フィクスチャが無い場合は自動でスキップされる）。
+      - name: テスト
+        run: uv run pytest -m "not slow"

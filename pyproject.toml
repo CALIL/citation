@@ -1,15 +1,45 @@
 [project]
 name = "citation"
 version = "1.0.0"
-description = ""
+description = "Wikipediaのダンプファイルから出典ISBNを抽出するツール"
 authors = [{ name = "CALIL Inc." }]
 requires-python = ">=3.14"
 dependencies = [
     "click",
     "isbnlib",
-    "colorama",
-    "halo",
 ]
 
-[tool.uv]
-package = false
+[project.scripts]
+citation = "citation.cli:main"
+citation-audit = "citation.audit:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.14.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: 実ダンプから切り出したフィクスチャを使うテスト（make_fixture.pyが必要）",
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = [
+    # 全角コロンや全角スペースはISBNの表記ゆれとして実際に現れるものであり、
+    # 日本語の文書・データを扱う以上こうした文字は意図して使う。
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]

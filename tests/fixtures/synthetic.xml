@@ -1,0 +1,180 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" xml:lang="ja">
+  <siteinfo>
+    <sitename>Wikipedia</sitename>
+    <dbname>jawiki</dbname>
+    <base>https://ja.wikipedia.org/wiki/</base>
+    <case>first-letter</case>
+  </siteinfo>
+  <page>
+    <title>ISBNパターン網羅</title>
+    <ns>0</ns>
+    <id>1</id>
+    <revision>
+      <id>101</id>
+      <text>
+* ISBN 4-7722-1227-2
+* ISBN 4-00-000008-X
+* ISBN 978-4-7722-1227-4
+* ISBN 4772212274
+* ISBN 1234772212272
+* ISBN 84772212274
+* ISBN 97847722122740
+* ISBN 978477221227200
+* ISBN 477221227200
+* ISBN 477221227400
+* ISBN 772-212272
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>プレフィックス表記ゆれ</title>
+    <ns>0</ns>
+    <id>2</id>
+    <revision>
+      <id>102</id>
+      <text>
+* ISBN10 4-7722-1227-2
+* ISBN13 978-4-7722-1227-4
+* ISBN　4-7722-1227-2
+* isbn=4-7722-1227-2
+* ISBN  4-7722-1227-2
+* isbn = 4-7722-1227-2
+* ISBN-10 4-7722-1227-2
+* ISBN-13 978-4-7722-1227-4
+* ISBN：4-7722-1227-2
+* ISBN-104772212272
+* ISBN4-7722-1227-2
+* 裸の表記 4-7722-1227-2 を含む文
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>見出しによる補正</title>
+    <ns>0</ns>
+    <id>3</id>
+    <revision>
+      <id>103</id>
+      <text>
+== 概要 ==
+* ISBN 4-7722-1227-2
+=== 詳細 ===
+* ISBN 4-7722-1227-2
+== 参考文献 ==
+* ISBN 4-7722-1227-2
+== 関連文献リスト ==
+* ISBN 4-7722-1227-2
+== 作品リスト ==
+* ISBN 4-7722-1227-2
+== 作品 ==
+* ISBN 4-7722-1227-2
+==== 深い見出し ====
+* ISBN 4-7722-1227-2
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>出典マークアップ</title>
+    <ns>0</ns>
+    <id>4</id>
+    <revision>
+      <id>104</id>
+      <text>
+== 本文 ==
+記述の根拠&lt;ref&gt;山田太郎『地理学』ISBN 4-7722-1227-2&lt;/ref&gt;である。
+* {{Cite book|title=地理学|isbn=4-7722-1227-2}}
+* {{cite book|title=地理学|isbn=4-7722-1227-2}}
+* {{Cite Book|title=地理学|isbn=4-7722-1227-2}}
+* {{ cite book |title=地理学|isbn=4-7722-1227-2}}
+* {{Citation|title=地理学|isbn=4-7722-1227-2}}
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>English Article</title>
+    <ns>0</ns>
+    <id>5</id>
+    <revision>
+      <id>105</id>
+      <text>
+== History ==
+* ISBN 4-7722-1227-2
+== References ==
+* ISBN 4-7722-1227-2
+== Bibliography ==
+* ISBN 4-7722-1227-2
+== Further reading ==
+* ISBN 4-7722-1227-2
+== Sources ==
+* ISBN 4-7722-1227-2
+== Works ==
+* ISBN 4-7722-1227-2
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>Wikipedia:名前空間テスト</title>
+    <ns>4</ns>
+    <id>6</id>
+    <revision>
+      <id>106</id>
+      <text>
+== 参考文献 ==
+* ISBN 4-7722-1227-2
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>Template:名前空間テスト</title>
+    <ns>10</ns>
+    <id>7</id>
+    <revision>
+      <id>107</id>
+      <text>
+* ISBN 978-4-7722-1227-4
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>除外されるケース</title>
+    <ns>0</ns>
+    <id>8</id>
+    <revision>
+      <id>108</id>
+      <text>
+* ISBN 4910123456789
+* ISBN 4-7722-1227-3
+* ISBN 9789789784772212274
+* ISBN 1234567
+* 電話番号 03-1234-5678 は対象外
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>空ISBNになるケース</title>
+    <ns>0</ns>
+    <id>9</id>
+    <revision>
+      <id>109</id>
+      <text>
+== 参考文献 ==
+* ISBN 9780000003
+* ISBN 9784062577
+      </text>
+    </revision>
+  </page>
+  <page>
+    <title>見出しの継承</title>
+    <ns>0</ns>
+    <id>10</id>
+    <revision>
+      <id>110</id>
+      <text>
+== 第一章 ==
+=== 第一節 ===
+* ISBN 4-7722-1227-2
+== 第二章 ==
+* ISBN 4-7722-1227-2
+      </text>
+    </revision>
+  </page>
+</mediawiki>
