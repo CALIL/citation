@@ -142,3 +142,15 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
 def find_isbn_candidates(line: str) -> list[tuple[str, str]]:
     """行からISBN候補を (接頭辞, 数字列) の組で拾い出す。"""
     return ISBN_RE.findall(line)
+
+
+def to_isbn10(isbn: str) -> str:
+    """ISBN-10に正規化する。変換できない場合は空文字。
+
+    isbnlibの ``to_isbn10()`` は先頭3文字が "978" かどうかだけでISBN-13と判断する。
+    そのため "9784062577" のような978で始まる正当なISBN-10を渡すと、ISBN-13として
+    検証に失敗して空文字を返してしまう。先にISBN-10かどうかを確かめる。
+    """
+    if isbnlib.is_isbn10(isbn):
+        return isbn
+    return isbnlib.to_isbn10(isbn)

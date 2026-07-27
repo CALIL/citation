@@ -6,7 +6,7 @@
 
 import pytest
 
-from citation.isbn import UNKNOWN, find_isbn_candidates, normalize_isbn
+from citation.isbn import UNKNOWN, find_isbn_candidates, normalize_isbn, to_isbn10
 
 #: (本文の表記, 期待するパターン名, 期待するISBN, 期待するスコア)
 #: スコアは接頭辞 "ISBN " があることによる +0.9 を含む。
@@ -81,6 +81,24 @@ def test_チェックデジットが不正なら採用しない() -> None:
 
 def test_雑誌コードは採用しない() -> None:
     assert not normalize_isbn("ISBN ", "4910123456789").adopted
+
+
+def test_978で始まるISBN10はそのまま返す() -> None:
+    """isbnlibのto_isbn10()は先頭3文字だけでISBN-13と誤認する（KNOWN_ISSUES.md 参照）。"""
+    assert to_isbn10("9784062577") == "9784062577"
+
+
+@pytest.mark.parametrize(
+    ("isbn", "expected"),
+    [
+        ("9784772212274", "4772212272"),  # ISBN-13から変換
+        ("4772212272", "4772212272"),  # すでにISBN-10
+        ("400000008X", "400000008X"),  # チェックデジットがX
+        ("9771234567003", ""),  # ISBNではない（雑誌のバーコード）
+    ],
+)
+def test_isbn10への正規化(isbn: str, expected: str) -> None:
+    assert to_isbn10(isbn) == expected
 
 
 @pytest.mark.parametrize(

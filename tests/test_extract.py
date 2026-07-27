@@ -97,10 +97,9 @@ def test_著作一覧の見出しでは出典とみなさない() -> None:
     assert record.score == pytest.approx(1.9)
 
 
-def test_978で始まるISBN10は変換に失敗して空になる() -> None:
-    """to_isbn10() が接頭辞だけでISBN-13と判定するため（KNOWN_ISSUES.md 参照）。"""
-    (record,) = extract(dump_page("空ISBN", ["* ISBN 9780000003"]))
-    assert record.isbn == ""
+def test_978で始まるISBN10も変換できる() -> None:
+    (record,) = extract(dump_page("978始まり", ["* ISBN 9780000003"]))
+    assert record.isbn == "9780000003"
     assert record.raw == "9780000003"
 
 

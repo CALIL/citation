@@ -3,14 +3,12 @@
 import re
 from collections.abc import Callable, Iterable, Iterator
 
-import isbnlib
-
 from citation.headings import (
     is_non_reference_heading,
     is_reference_heading,
     parse_heading,
 )
-from citation.isbn import NormalizedIsbn, find_isbn_candidates, normalize_isbn
+from citation.isbn import NormalizedIsbn, find_isbn_candidates, normalize_isbn, to_isbn10
 from citation.record import Exclusion, Record
 
 #: ページの開始行。ダンプのインデントは固定なので完全一致で判定できる。
@@ -123,7 +121,7 @@ class Extractor:
                 score += 0.5
 
         return Record(
-            isbn=isbnlib.to_isbn10(normalized.isbn),
+            isbn=to_isbn10(normalized.isbn),
             raw=raw.strip(),
             title=self._title or "",
             score=score,
