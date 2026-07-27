@@ -91,6 +91,12 @@ def test_要出典テンプレートは出典とみなさない() -> None:
     assert not record.is_ref
 
 
+def test_スコアに浮動小数点の誤差が残らない() -> None:
+    """0.9 + 0.5 - 0.5 が 0.8999999999999999 にならないこと。"""
+    (record,) = extract(dump_page("作品", ["== 作品リスト ==", "* ISBN 0-230-22620-5"]))
+    assert record.score == 0.9  # 誤差を許容せず厳密に比較する
+
+
 def test_著作一覧の見出しでは出典とみなさない() -> None:
     (record,) = extract(dump_page("作品", ["== 作品リスト ==", "* ISBN 4-7722-1227-2"]))
     assert not record.is_ref
