@@ -10,8 +10,13 @@ import re
 HEADING_RE = re.compile("([=]{2,3})([^=]+)(.*)")
 
 #: 出典が列挙されているとみなす見出し。
+#:
+#: 英語の見出しは "Further reading" と "Further Reading" のように大文字小文字が
+#: 揺れるため、すべて小文字で持ち、比較するときに見出し側を小文字化する。
+#: 日本語には大文字小文字の区別がないので同じ扱いで問題ない。
 REF_HEADINGS = frozenset(
     {
+        # 日本語版
         "典拠・資料",
         "脚注",
         "脚注および参考文献",
@@ -26,6 +31,19 @@ REF_HEADINGS = frozenset(
         "文献",
         "出典",
         "参照文献",
+        # 英語版
+        "references",
+        "reference",
+        "bibliography",
+        "further reading",
+        "sources",
+        "notes",
+        "footnotes",
+        "citations",
+        "works cited",
+        "notes and references",
+        "references and notes",
+        "references and further reading",
     }
 )
 
@@ -33,7 +51,19 @@ REF_HEADINGS = frozenset(
 REF_HEADING_PREFIXES = ("関連文献",)
 
 #: 出典ではなく、その人物・団体の著作を並べているとみなす見出し。
-NON_REF_HEADINGS = frozenset({"作品リスト", "作品"})
+#: REF_HEADINGS と同じく英語は小文字で持つ。
+NON_REF_HEADINGS = frozenset(
+    {
+        # 日本語版
+        "作品リスト",
+        "作品",
+        # 英語版
+        "works",
+        "publications",
+        "selected works",
+        "selected publications",
+    }
+)
 
 
 def parse_heading(line: str) -> tuple[int, str] | None:
@@ -55,9 +85,9 @@ def parse_heading(line: str) -> tuple[int, str] | None:
 
 def is_reference_heading(heading: str) -> bool:
     """出典が列挙されているセクションの見出しか。"""
-    return heading in REF_HEADINGS or heading.startswith(REF_HEADING_PREFIXES)
+    return heading.lower() in REF_HEADINGS or heading.startswith(REF_HEADING_PREFIXES)
 
 
 def is_non_reference_heading(heading: str) -> bool:
     """出典ではなく著作の一覧とみなすセクションの見出しか。"""
-    return heading in NON_REF_HEADINGS
+    return heading.lower() in NON_REF_HEADINGS

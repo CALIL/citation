@@ -133,18 +133,28 @@ uv run citation-audit stats citation-jawiki-20260401.jsonl
   利用側の期待による
 - **想定される影響**: 再判定する場合は件数が減る。説明を直すだけなら出力は変わらない
 
-8. 出典セクションの見出し辞書が日本語しかない
+8. 出典セクションの見出し辞書が日本語しかない 【対応済み】
 ----
 
 - **症状**: 英語版Wikipediaで出典セクションのISBNがブーストされない
-- **箇所**: `src/citation/headings.py` の `REF_HEADINGS`
-- **実測**: citation-enwiki-20250601.jsonl の先頭40万件で、`References` 60,752件 /
-  `Further reading` 29,725件 / `Bibliography` 22,473件 / `Sources` 13,701件が
-  すべて辞書に無い。`<ref>` タグのある行だけが出典として拾えている状態
-- **修正案**: 英語の見出し（References, Bibliography, Further reading, Sources,
-  Notes, Citations など）を辞書に追加する。著作一覧側にも Works, Publications,
-  Discography などを足す
-- **想定される影響**: 英語版の `is_ref` とスコアが大きく変わる。件数は変わらない
+- **箇所**: `src/citation/headings.py` の `REF_HEADINGS` と `NON_REF_HEADINGS`
+- **修正前の実測**: citation-enwiki-20250601.jsonl の先頭40万件で、`References` 60,752件 /
+  `Further reading` 29,725件 / `Bibliography` 22,473件 / `Sources` 13,701件がすべて
+  辞書に無く、`<ref>` タグのある行だけが出典として拾えている状態だった
+- **対応**: 英語の出典見出し（references, bibliography, further reading, sources,
+  notes, footnotes, citations, works cited など）と、著作一覧の見出し（works,
+  publications, selected works）を辞書に追加した。英語は "Further reading" と
+  "Further Reading" のように大文字小文字が揺れるため、辞書を小文字で持ち、
+  比較するときに見出し側を小文字化する方式にした
+- **変更による影響**: レコード数は変わらず、出典としての評価だけが変わる
+
+  | ダンプ | 内容が変わったレコード | `is_ref` が false → true |
+  |---|---:|---:|
+  | jawiki-20260401（1,249,536件） | 227 | 104 |
+  | enwiki-20250601の先頭49,965ページ（340,851件） | 114,973（33.7%） | 23,205 |
+
+  英語版では出典と判定されたレコードの割合が86.9%から93.7%に上がった。
+  日本語版で影響が小さいのは、英語の見出しがほとんど現れないため
 
 9. 出力の改行コードが実行環境に依存する
 ----

@@ -36,11 +36,11 @@
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.9, "h1": "本文", "h2": null, "is_ref": true}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "出典マークアップ", "score": 2.4, "h1": "本文", "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "History", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "References", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "Bibliography", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "Further reading", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "Sources", "h2": null, "is_ref": false}
-{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.4, "h1": "Works", "h2": null, "is_ref": false}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.9, "h1": "References", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.9, "h1": "Bibliography", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.9, "h1": "Further reading", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 2.9, "h1": "Sources", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 1.9, "h1": "Works", "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "Wikipedia:名前空間テスト", "score": 2.9, "h1": "参考文献", "h2": null, "is_ref": true}
 {"isbn": "4772212272", "raw": "978-4-7722-1227-4", "title": "Template:名前空間テスト", "score": 1.9, "h1": null, "h2": null, "is_ref": false}
 {"isbn": "9780000003", "raw": "9780000003", "title": "978で始まるISBN", "score": 1.9, "h1": "参考文献", "h2": null, "is_ref": true}

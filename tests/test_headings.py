@@ -41,13 +41,25 @@ def test_関連文献で始まる見出しも出典扱い() -> None:
     assert is_reference_heading("関連文献リスト")
 
 
-@pytest.mark.parametrize("heading", ["概要", "歴史", "References", "Bibliography"])
+@pytest.mark.parametrize(
+    "heading",
+    ["References", "Bibliography", "Further reading", "Sources", "Notes", "Works cited"],
+)
+def test_英語版の出典セクションの見出し(heading: str) -> None:
+    assert is_reference_heading(heading)
+
+
+@pytest.mark.parametrize("heading", ["references", "REFERENCES", "Further Reading"])
+def test_英語の見出しは大文字小文字を問わない(heading: str) -> None:
+    assert is_reference_heading(heading)
+
+
+@pytest.mark.parametrize("heading", ["概要", "歴史", "History", "External links", "See also"])
 def test_出典セクションではない見出し(heading: str) -> None:
-    """英語版の見出しは辞書に無いため出典と判定されない（KNOWN_ISSUES.md 参照）。"""
     assert not is_reference_heading(heading)
 
 
-@pytest.mark.parametrize("heading", ["作品リスト", "作品"])
+@pytest.mark.parametrize("heading", ["作品リスト", "作品", "Works", "Publications"])
 def test_著作一覧の見出し(heading: str) -> None:
     assert is_non_reference_heading(heading)
 
