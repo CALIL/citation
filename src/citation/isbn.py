@@ -132,10 +132,14 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
             if isbn.endswith("X"):  # チェックデジットがXなら偶然の一致ではない
                 score += 0.5
         elif "X" not in isbn and isbnlib.is_isbn13("978" + isbn):
-            # ISBN-13の "978" が欠けた表記
+            # ISBN-13の "978" が欠けた表記。ただしISBN-13のチェックデジットは10通り
+            # しかないため、任意の10桁数字列の約1割が偶然この条件を満たす。実際に
+            # jawiki-20260401 で該当した49,120件のうちISBNの記述があるものは40件だけで、
+            # 残りは日付や電話番号やフォーメーションの数字だった。ISBNの記述が無ければ
+            # 採用しない重みにしておく。
             pattern = "I13(978+)"
             isbn = "978" + isbn
-            score += 1.0
+            score += 0.5
     elif length == 13:
         if isbn.startswith("491"):
             pattern = "雑誌コード"
