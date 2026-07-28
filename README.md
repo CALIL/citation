@@ -105,31 +105,69 @@ uv run citation-audit diff before.jsonl after.jsonl
 処理済みデータのダウンロード
 ----
 
-| ダンプ                                                                                                                                               | 処理データ                                                                                                    |      件数 |
-|------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|----------:|
-| [jawiki-20190420-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190420.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190420.jsonl) |   672,155 |
-| [jawiki-20190601-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190601/jawiki-20190601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190601.jsonl) |   679,440 |
-| [jawiki-20190801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20190801/jawiki-20190801-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190801.jsonl) |   688,393 |
-| [jawiki-20191220-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20191220/jawiki-20191220-pages-articles-multistream.xml.bz2) | [citation-jawiki-20191220.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20191220.jsonl) |   714,273 |
-| [jawiki-20200301-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20200301/jawiki-20200301-pages-articles-multistream.xml.bz2) | [citation-jawiki-20200301.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20200301.jsonl) |   728,278 |
-| [jawiki-20200801-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20200801/jawiki-20200801-pages-articles-multistream.xml.bz2) | [citation-jawiki-20200801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20200801.jsonl) |   763,007 |
-| [jawiki-20201201-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20201201-pages-articles-multistream.xml.bz2) | [citation-jawiki-20201201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20201201.jsonl) |   788,068 |
-| [jawiki-20210620-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20210620/jawiki-20210620-pages-articles-multistream.xml.bz2) | [citation-jawiki-20210620.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210620.jsonl) |   839,059 |
-| [jawiki-20210920-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20210920/jawiki-20210920-pages-articles-multistream.xml.bz2) | [citation-jawiki-20210920.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210920.jsonl) |   864,341 |
-| [jawiki-20211120-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20211120/jawiki-20211120-pages-articles-multistream.xml.bz2) | [citation-jawiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20211120.jsonl) |   880,591 |
-| [enwiki-20211120-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20211120/enwiki-20211120-pages-articles-multistream.xml.bz2) | [citation-enwiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20211120.jsonl) | 5,116,149 |
-| [jawiki-20221220-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20221220/jawiki-20221220-pages-articles-multistream.xml.bz2) | [citation-jawiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20221220.jsonl) |   970,869 |
-| [enwiki-20221220-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20221220/enwiki-20221220-pages-articles-multistream.xml.bz2) | [citation-enwiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20221220.jsonl) | 6,064,901 |
-| [jawiki-20240401-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20240401/jawiki-20240401-pages-articles-multistream.xml.bz2) | [citation-jawiki-20240401.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20240401.jsonl) | 1,073,563 |
-| [enwiki-20240401-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20240401/enwiki-20240401-pages-articles-multistream.xml.bz2) | [citation-enwiki-20240401.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20240401.jsonl) | 7,023,140 |
-| [jawiki-20241201-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20241201/jawiki-20241201-pages-articles-multistream.xml.bz2) | [citation-jawiki-20241201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20241201.jsonl) | 1,130,854 |
-| [enwiki-20241201-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20241201/enwiki-20241201-pages-articles-multistream.xml.bz2) | [citation-enwiki-20241201.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20241201.jsonl) | 8,669,996 |
-| [jawiki-20250601-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/jawiki/20250601/jawiki-20250601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20250601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20250601.jsonl) | 1,175,404 |
-| [enwiki-20250601-pages-articles-multistream.xml.bz2](https://dumps.wikimedia.org/enwiki/20250601/enwiki-20250601-pages-articles-multistream.xml.bz2) | [citation-enwiki-20250601.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20250601.jsonl) | 9,212,634 |
+| ダンプ | 処理データ | 件数 | 最新ロジック |
+|---|---|---:|:-:|
+| [jawiki-20110921](https://dumps.wikimedia.org/jawiki/20110921/jawiki-20110921-pages-articles.xml.bz2) | [citation-jawiki-20110921.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20110921.jsonl) |   261,170 | ○ |
+| [jawiki-20141211](https://dumps.wikimedia.org/jawiki/20141211/jawiki-20141211-pages-articles-multistream.xml.bz2) | [citation-jawiki-20141211.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20141211.jsonl) |   416,078 | ○ |
+| [jawiki-20150602](https://dumps.wikimedia.org/jawiki/20150602/jawiki-20150602-pages-articles-multistream.xml.bz2) | [citation-jawiki-20150602.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20150602.jsonl) |   441,064 | ○ |
+| [jawiki-20160601](https://dumps.wikimedia.org/jawiki/20160601/jawiki-20160601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20160601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20160601.jsonl) |   495,273 | ○ |
+| [jawiki-20170601](https://dumps.wikimedia.org/jawiki/20170601/jawiki-20170601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20170601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20170601.jsonl) |   547,018 | ○ |
+| [jawiki-20180901](https://dumps.wikimedia.org/jawiki/20180901/jawiki-20180901-pages-articles-multistream.xml.bz2) | [citation-jawiki-20180901.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20180901.jsonl) |   616,968 | ○ |
+| [jawiki-20190420](https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190420.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190420.jsonl) |   672,155 |   |
+| [jawiki-20190601](https://dumps.wikimedia.org/jawiki/20190601/jawiki-20190601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190601.jsonl) |   679,440 |   |
+| [jawiki-20190801](https://dumps.wikimedia.org/jawiki/20190801/jawiki-20190801-pages-articles-multistream.xml.bz2) | [citation-jawiki-20190801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20190801.jsonl) |   688,393 |   |
+| [jawiki-20191220](https://dumps.wikimedia.org/jawiki/20191220/jawiki-20191220-pages-articles-multistream.xml.bz2) | [citation-jawiki-20191220.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20191220.jsonl) |   714,273 |   |
+| [jawiki-20200301](https://dumps.wikimedia.org/jawiki/20200301/jawiki-20200301-pages-articles-multistream.xml.bz2) | [citation-jawiki-20200301.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20200301.jsonl) |   728,278 |   |
+| [jawiki-20200801](https://dumps.wikimedia.org/jawiki/20200801/jawiki-20200801-pages-articles-multistream.xml.bz2) | [citation-jawiki-20200801.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20200801.jsonl) |   763,007 |   |
+| [jawiki-20201201](https://dumps.wikimedia.org/jawiki/20201201/jawiki-20201201-pages-articles-multistream.xml.bz2) | [citation-jawiki-20201201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20201201.jsonl) |   788,068 |   |
+| [jawiki-20210620](https://dumps.wikimedia.org/jawiki/20210620/jawiki-20210620-pages-articles-multistream.xml.bz2) | [citation-jawiki-20210620.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210620.jsonl) |   839,059 |   |
+| [jawiki-20210920](https://dumps.wikimedia.org/jawiki/20210920/jawiki-20210920-pages-articles-multistream.xml.bz2) | [citation-jawiki-20210920.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20210920.jsonl) |   864,341 |   |
+| [jawiki-20211120](https://dumps.wikimedia.org/jawiki/20211120/jawiki-20211120-pages-articles-multistream.xml.bz2) | [citation-jawiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20211120.jsonl) |   880,591 |   |
+| [enwiki-20211120](https://dumps.wikimedia.org/enwiki/20211120/enwiki-20211120-pages-articles-multistream.xml.bz2) | [citation-enwiki-20211120.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20211120.jsonl) | 5,116,149 |   |
+| [jawiki-20221220](https://dumps.wikimedia.org/jawiki/20221220/jawiki-20221220-pages-articles-multistream.xml.bz2) | [citation-jawiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20221220.jsonl) |   970,869 |   |
+| [enwiki-20221220](https://dumps.wikimedia.org/enwiki/20221220/enwiki-20221220-pages-articles-multistream.xml.bz2) | [citation-enwiki-20221220.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20221220.jsonl) | 6,064,901 |   |
+| [jawiki-20240401](https://dumps.wikimedia.org/jawiki/20240401/jawiki-20240401-pages-articles-multistream.xml.bz2) | [citation-jawiki-20240401.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20240401.jsonl) | 1,042,239 | ○ |
+| [enwiki-20240401](https://dumps.wikimedia.org/enwiki/20240401/enwiki-20240401-pages-articles-multistream.xml.bz2) | [citation-enwiki-20240401.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20240401.jsonl) | 5,295,568 | ○ |
+| [jawiki-20241201](https://dumps.wikimedia.org/jawiki/20241201/jawiki-20241201-pages-articles-multistream.xml.bz2) | [citation-jawiki-20241201.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20241201.jsonl) | 1,097,343 | ○ |
+| [enwiki-20241201](https://dumps.wikimedia.org/enwiki/20241201/enwiki-20241201-pages-articles-multistream.xml.bz2) | [citation-enwiki-20241201.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20241201.jsonl) | 5,545,002 | ○ |
+| [jawiki-20250601](https://dumps.wikimedia.org/jawiki/20250601/jawiki-20250601-pages-articles-multistream.xml.bz2) | [citation-jawiki-20250601.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20250601.jsonl) | 1,140,156 | ○ |
+| [enwiki-20250601](https://dumps.wikimedia.org/enwiki/20250601/enwiki-20250601-pages-articles-multistream.xml.bz2) | [citation-enwiki-20250601.jsonl](https://storage.googleapis.com/isbn-citation/citation-enwiki-20250601.jsonl) | 5,722,443 | ○ |
+| [jawiki-20260401](https://dumps.wikimedia.org/jawiki/20260401/jawiki-20260401-pages-articles-multistream.xml.bz2) | [citation-jawiki-20260401.jsonl](https://storage.googleapis.com/isbn-citation/citation-jawiki-20260401.jsonl) | 1,212,087 | ○ |
+
+「最新ロジック」の列は、現在の抽出ロジックで処理し直したものに○を付けている。空欄のものは以前のロジックで抽出したままで、記事以外の名前空間が混ざっていたり、日付や電話番号を誤ってISBNとして拾っていたりする。順次処理し直す。
 
 - [日本語版Wikipediaのダンプ](https://dumps.wikimedia.org/jawiki/)
 - [英語版Wikipediaのダンプ](https://dumps.wikimedia.org/enwiki/)
 - [保存場所の管理](https://console.cloud.google.com/storage/browser/isbn-citation) （管理者用）
+
+過去ダンプの入手と再処理
+----
+
+公式サイトは直近数か月分のダンプしか置いていないため、過去のダンプは別の場所から取る。
+年次シリーズの対象と取得元は `tools/backfill.py` にまとめてある。
+
+```bash
+# 対象と手元の状態を一覧する
+uv run python tools/backfill.py list
+
+# 取得（md5照合まで）→ 抽出 → 件数の記録
+uv run python tools/backfill.py run --wiki jawiki
+
+# ダウンロードと抽出を並走させる場合（抽出は取得できたものから順に処理する）
+uv run python tools/backfill.py fetch --wiki enwiki -j 3
+uv run python tools/backfill.py extract --watch
+```
+
+| 取得元 | 残っている範囲 |
+|---|---|
+| [dumps.wikimedia.org](https://dumps.wikimedia.org/) | 直近5〜7か月分 |
+| [Internet Archive](https://archive.org/details/wikimediadownloads) | jawiki・enwikiとも2014年11月〜2022年5月がほぼ毎月。ほかにjawikiの2011年、enwikiの2008〜2010年 |
+| [公式のヒストリカルアーカイブ](https://dumps.wikimedia.org/archive/) | enwikiの20080103と20100312（`pages-articles`） |
+
+Internet Archive のミラーは2022年5月で止まっているため、**2012年・2013年・2023年の
+ダンプはどこにも残っておらず再処理できない**。2011年以前のダンプは multistream が無いため
+逐次処理になり、`<ns>` を持たないため記事以外の名前空間も混ざる
+（[KNOWN_ISSUES.md](KNOWN_ISSUES.md) の25番）。
 
 注意事項
 ----
