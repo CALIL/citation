@@ -5,6 +5,7 @@ KNOWN_ISSUES.md に挙げた不具合に手を入れたとき、出力がどう�
 何件増えて何件減り、どのレコードの内容が変わったかが分かる。
 """
 
+import hashlib
 import json
 from collections import Counter
 from collections.abc import Iterator
@@ -29,6 +30,27 @@ def _iter_lines(path: str) -> Iterator[str]:
     with open(path, encoding="utf-8") as f:
         for line in f:
             yield line.rstrip("\n")
+
+
+def _line_key(line: str) -> int:
+    """行を64ビットのハッシュに畳む。
+
+    行そのものをメモリに載せると数百万件で数GBに達するため、まずハッシュだけで
+    差分を求め、実際の行は差分に該当するものだけ読み直す。
+    """
+    return int.from_bytes(hashlib.blake2b(line.encode("utf-8"), digest_size=8).digest(), "big")
+
+
+def _collect_lines(path: str, wanted: Counter[int]) -> Counter[str]:
+    """指定したハッシュに一致する行だけを集める。"""
+    remaining = Counter(wanted)
+    found: Counter[str] = Counter()
+    for line in _iter_lines(path):
+        key = _line_key(line)
+        if remaining[key] > 0:
+            remaining[key] -= 1
+            found[line] += 1
+    return found
 
 
 def _record_key(line: str) -> tuple[str, str]:
@@ -104,23 +126,31 @@ def stats(filename: str) -> None:
 def diff(old_filename: str, new_filename: str) -> None:
     """2つのJSONLを比較して差分の内訳を表示する
 
-    両方のファイルを丸ごとメモリに載せるため、数百万件を比較する場合は
-    それなりのメモリを使う。
+    まず行のハッシュだけで差分を求め、実際の行は差分に該当するものだけを読み直す。
+    行をそのまま保持すると数百万件で数GBに達するため。
     """
-    old_lines = Counter(_iter_lines(old_filename))
-    new_lines = Counter(_iter_lines(new_filename))
+    old_hashes = Counter(_line_key(line) for line in _iter_lines(old_filename))
+    new_hashes = Counter(_line_key(line) for line in _iter_lines(new_filename))
 
-    old_total = sum(old_lines.values())
-    new_total = sum(new_lines.values())
+    old_total = sum(old_hashes.values())
+    new_total = sum(new_hashes.values())
     click.echo(f"レコード数: {old_total:,} -> {new_total:,} ({new_total - old_total:+,})")
 
-    added = new_lines - old_lines
-    removed = old_lines - new_lines
-    if not added and not removed:
+    added_hashes = new_hashes - old_hashes
+    removed_hashes = old_hashes - new_hashes
+    del old_hashes, new_hashes
+
+    if not added_hashes and not removed_hashes:
         click.secho("差分はありません", fg="green")
         return
 
-    click.echo(f"一致しない行: 追加 {sum(added.values()):,} / 消失 {sum(removed.values()):,}")
+    click.echo(
+        f"一致しない行: 追加 {sum(added_hashes.values()):,} / 消失 {sum(removed_hashes.values()):,}"
+    )
+
+    # ここから先は差分に該当する行だけあればよい
+    added = _collect_lines(new_filename, added_hashes)
+    removed = _collect_lines(old_filename, removed_hashes)
 
     # 同じ (ページ名, 元表記) が両方に現れるなら、レコードが増減したのではなく
     # スコアや出典判定といった中身が変わったということ。
