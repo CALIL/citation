@@ -161,6 +161,30 @@ def test_出力用ISBNへの正規化(isbn: str, expected: str) -> None:
 @pytest.mark.parametrize(
     ("line", "prefix"),
     [
+        ("https://www.hanmoto.com/bd/isbn/4772212272", "/isbn/"),
+        ("https://calil.jp/book/4772212272", "calil.jp/book/"),
+        ("https://www.worldcat.org/isbn/4772212272", "/isbn/"),
+        ("http://bookweb.kinokuniya.co.jp/wshosea.cgi?W-ISBN=4772212272", "ISBN="),
+        ("url=https://www.amazon.com/Rough-Guide/dp/4772212272", "/dp/"),
+        ("[https://www.amazon.co.jp/exec/obidos/ASIN/4772212272 書名]", "/ASIN/"),
+        ("https://www.amazon.com/gp/product/4772212272", "/gp/product/"),
+    ],
+)
+def test_商品URLのパスを接頭辞として認識する(line: str, prefix: str) -> None:
+    """AmazonのASINは書籍ならISBN-10と同じ番号なので出典として拾える。"""
+    candidates = find_isbn_candidates(line)
+    assert candidates[0][0] == prefix
+    assert normalize_isbn(*candidates[0]).adopted
+
+
+def test_書籍以外のASINは拾わない() -> None:
+    """書籍以外のASINは "B0" で始まるため、数字列としてマッチしない。"""
+    assert find_isbn_candidates("https://www.amazon.co.jp/dp/B08XYZABCD") == []
+
+
+@pytest.mark.parametrize(
+    ("line", "prefix"),
+    [
         ("*# 初版発行、{{ISBN2|4-7722-1227-2}}", "ISBN2|"),
         ("{{isbn2|4-7722-1227-2}}", "isbn2|"),
         ("{{ISBNT|4-7722-1227-2}}", "ISBNT|"),
