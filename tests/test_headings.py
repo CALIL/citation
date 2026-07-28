@@ -71,9 +71,33 @@ def test_出典セクションではない見出し(heading: str) -> None:
     assert not is_reference_heading(heading)
 
 
-@pytest.mark.parametrize("heading", ["作品リスト", "作品", "Works", "Publications"])
+@pytest.mark.parametrize(
+    "heading",
+    [
+        "作品リスト",
+        "作品",
+        "著書",
+        "著作",
+        "既刊一覧",
+        "単行本",
+        "出版物",
+        "主な著書",
+        "著作一覧",
+        "写真集",
+        "Works",
+        "Publications",
+    ],
+)
 def test_著作一覧の見出し(heading: str) -> None:
     assert is_non_reference_heading(heading)
+
+
+@pytest.mark.parametrize(
+    "heading",
+    ["General and cited references", "Notes, references and sources", "General and cited sources"],
+)
+def test_英語の出典見出しのバリエーション(heading: str) -> None:
+    assert is_reference_heading(heading)
 
 
 def test_参考文献は著作一覧ではない() -> None:

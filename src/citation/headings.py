@@ -45,6 +45,9 @@ REF_HEADINGS = frozenset(
         "notes and references",
         "references and notes",
         "references and further reading",
+        "general and cited references",
+        "general and cited sources",
+        "notes, references and sources",
     }
 )
 
@@ -55,9 +58,27 @@ REF_HEADING_PREFIXES = ("関連文献",)
 #: REF_HEADINGS と同じく英語は小文字で持つ。
 NON_REF_HEADINGS = frozenset(
     {
-        # 日本語版
-        "作品リスト",
+        # 日本語版。記事の主題そのものが生み出した本を並べる見出し
         "作品",
+        "作品リスト",
+        "作品一覧",
+        "主な作品",
+        "著書",
+        "著作",
+        "著作一覧",
+        "著作リスト",
+        "著作物",
+        "主な著書",
+        "主な著作",
+        "主要著作",
+        "単行本",
+        "単行本リスト",
+        "既刊一覧",
+        "刊行一覧",
+        "掲載刊行物一覧",
+        "出版物",
+        "写真集",
+        "ビブリオグラフィ",
         # 英語版
         "works",
         "publications",
