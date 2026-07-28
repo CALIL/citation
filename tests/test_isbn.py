@@ -129,6 +129,23 @@ def test_出力用ISBNへの正規化(isbn: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
+    ("line", "prefix"),
+    [
+        ("*# 初版発行、{{ISBN2|4-7722-1227-2}}", "ISBN2|"),
+        ("{{isbn2|4-7722-1227-2}}", "isbn2|"),
+        ("{{ISBNT|4-7722-1227-2}}", "ISBNT|"),
+        ("{{ISBN|4772212272}}", "ISBN|"),
+        ("{{isbn|4772212272}}", "isbn|"),
+    ],
+)
+def test_テンプレート記法を接頭辞として認識する(line: str, prefix: str) -> None:
+    """日本語版では {{ISBN2|...}} が22万件以上使われている。"""
+    candidates = find_isbn_candidates(line)
+    assert candidates[0][0] == prefix
+    assert normalize_isbn(*candidates[0]).score == pytest.approx(2.4)
+
+
+@pytest.mark.parametrize(
     ("line", "expected"),
     [
         ("* ISBN 4-7722-1227-2", [("ISBN ", "4-7722-1227-2")]),

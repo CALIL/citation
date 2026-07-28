@@ -15,14 +15,35 @@ from dataclasses import dataclass
 
 import isbnlib
 
-#: ISBN候補を拾う正規表現。前半がISBNを示す接頭辞、後半が数字列。
-#:
-#: 接頭辞の並び順はそのまま優先順位になる。長いものを先に置かないと
+#: ISBNを示す接頭辞。並び順がそのまま優先順位になる。長いものを先に置かないと
 #: "ISBN-10 " が "ISBN-" として解釈されてしまうため、並べ替えないこと。
-ISBN_RE = re.compile(
-    r"((?:ISBN10 |ISBN13 |ISBN　|isbn=|ISBN  |isbn = |ISBN-10 |ISBN-13 |ISBN：|ISBN-|ISBN |ISBN)?)"
-    r"([0-9][0-9\- ]{8,20}[0-9Xx])"
-)
+ISBN_PREFIXES = [
+    # テンプレート記法。日本語版では {{ISBN2|...}} が最も多く使われる
+    r"ISBN2\|",
+    r"isbn2\|",
+    r"Isbn2\|",
+    r"ISBNT\|",
+    r"isbnt\|",
+    r"ISBN\|",
+    r"isbn\|",
+    r"Isbn\|",
+    # 本文中の表記
+    "ISBN10 ",
+    "ISBN13 ",
+    "ISBN　",
+    "isbn=",
+    "ISBN  ",
+    "isbn = ",
+    "ISBN-10 ",
+    "ISBN-13 ",
+    "ISBN：",
+    "ISBN-",
+    "ISBN ",
+    "ISBN",
+]
+
+#: ISBN候補を拾う正規表現。前半がISBNを示す接頭辞、後半が数字列。
+ISBN_RE = re.compile("((?:" + "|".join(ISBN_PREFIXES) + ")?)" + r"([0-9][0-9\- ]{8,20}[0-9Xx])")
 
 #: 桁数からも接頭辞からも正体を判定できなかった候補につけるパターン名。
 UNKNOWN = "?"
