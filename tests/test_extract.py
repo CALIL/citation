@@ -139,7 +139,8 @@ def test_接頭辞のない裸の数字列も拾う() -> None:
     """接頭辞なしの検出はREADMEに明記された仕様（KNOWN_ISSUES.md 課題1参照）。"""
     (record,) = extract(dump_page("裸の表記", ["参考 4-7722-1227-2 を参照"]))
     assert record.isbn == "4772212272"
-    assert record.score == pytest.approx(1.5)
+    # I10の0.5 + 先頭が4の1.0 + ISBNの区切り位置でハイフンが入っている0.5
+    assert record.score == pytest.approx(2.0)
 
 
 def test_採用後の減点でスコアが閾値を下回ることがある() -> None:

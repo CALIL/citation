@@ -72,6 +72,19 @@ class NormalizedIsbn:
         return self.score >= ADOPTION_THRESHOLD
 
 
+def _hyphenated_as_isbn(raw: str, isbn: str) -> bool:
+    """元の表記が、そのISBNの正しい区切り位置でハイフン分割されているか。
+
+    "0-520-20743-2" のように、グループ・出版社・書名・チェックデジットの境目で
+    ハイフンが入っていれば、書き手がISBNとして整形したとみなせる。日付や連番が
+    たまたまこの位置で区切られることは考えにくい。
+    """
+    try:
+        return raw == isbnlib.mask(isbn)
+    except isbnlib.NotValidISBNError:
+        return False
+
+
 def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
     """ISBN候補を正規化し、確からしさのスコアをつける。
 
@@ -167,6 +180,12 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
         # 先頭の "4" が落ちた日本の出版物
         isbn = "4" + isbn
         pattern = "I10(4+)"
+        score += 0.5
+
+    # ISBNの記述が無くても、正しい区切り位置でハイフンが入っていれば書き手が
+    # ISBNとして整形したとみなせる。実測では、これに該当して採用されていなかった
+    # 6,463件がいずれも "0-520-20743-2" のような英語圏の実在ISBNだった。
+    if not prefix and "-" in raw and pattern != UNKNOWN and _hyphenated_as_isbn(raw.strip(), isbn):
         score += 0.5
 
     return NormalizedIsbn(isbn=isbn, pattern=pattern, score=score)

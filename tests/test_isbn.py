@@ -56,8 +56,9 @@ def test_全パターンを網羅している() -> None:
 
 
 def test_接頭辞がないとスコアが0_9低い() -> None:
-    with_prefix = normalize_isbn("ISBN ", "4-7722-1227-2")
-    without_prefix = normalize_isbn("", "4-7722-1227-2")
+    """区切りの一致による加点が混ざらないよう、ハイフンなしの表記で比べる。"""
+    with_prefix = normalize_isbn("ISBN ", "4772212272")
+    without_prefix = normalize_isbn("", "4772212272")
     assert without_prefix.pattern == with_prefix.pattern
     assert without_prefix.score == pytest.approx(with_prefix.score - 0.9)
 
@@ -102,6 +103,35 @@ def test_スペース区切りのISBNは採用する(prefix: str, raw: str, isbn
     result = normalize_isbn(prefix, raw)
     assert result.adopted
     assert result.isbn == isbn
+
+
+@pytest.mark.parametrize(
+    "raw",
+    ["0-520-20743-2", "0-299-02470-9", "0-340-76167-9"],
+)
+def test_正しい区切りのハイフンがあれば接頭辞なしでも採用する(raw: str) -> None:
+    """英語圏のISBNは先頭が4でないため、従来はスコアが足りず採用できなかった。"""
+    result = normalize_isbn("", raw)
+    assert result.pattern == "I10"
+    assert result.adopted
+    assert result.score == pytest.approx(1.0)  # I10の0.5 + 区切り一致の0.5
+
+
+def test_区切り位置が違えば加点しない() -> None:
+    """ISBNとしての正しい区切りでなければ、日付や連番の可能性がある。"""
+    result = normalize_isbn("", "2026-21614-2")  # 正しくは 2-02-621614-2
+    assert not result.adopted
+
+
+def test_ハイフンがなければ加点しない() -> None:
+    result = normalize_isbn("", "1000342530")
+    assert not result.adopted
+
+
+def test_接頭辞があるときは区切りで二重に加点しない() -> None:
+    """接頭辞の+0.9で十分に信頼できるため、区切りの一致は見ない。"""
+    result = normalize_isbn("ISBN ", "4-7722-1227-2")
+    assert result.score == pytest.approx(2.4)
 
 
 def test_雑誌コードは採用しない() -> None:
