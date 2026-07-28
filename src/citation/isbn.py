@@ -73,6 +73,15 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
     if prefix:  # ISBNの記述があった場合は信頼
         score += 0.9
 
+    # ISBNの記述もISBN-13のプレフィックスも無いのに、区切りとしてスペースが混じって
+    # いる数字列は、日付やページ範囲や郵便番号を拾っている。jawiki-20260401 で該当した
+    # 1,871件を調べたところ "2008-12-10 00"（日付と時刻）、"197-207 1991"（ページと年）、
+    # "10115 - 14199"（郵便番号の範囲）のようなものばかりだった。
+    # 逆に "ISBN 0 521 31827 0" のように接頭辞があるものや "978 1 84603 502 9" のように
+    # ISBN-13のプレフィックスで始まるものは、スペース区切りのISBNとして妥当なので残す。
+    if not prefix and " " in raw and not isbn.startswith(("978", "979")):
+        return NormalizedIsbn(isbn=isbn, pattern=UNKNOWN, score=score)
+
     # "978" を重ねて書いてしまった16桁。先頭の3桁を捨てるとISBN-13になる。
     # NOTE: 実データでこの表記は見つかっていない（jawiki 3,000ページと
     # enwiki 49,965ページの16桁候補2,596件を調べて0件）。

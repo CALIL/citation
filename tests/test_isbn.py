@@ -75,6 +75,35 @@ def test_チェックデジットが不正なら採用しない() -> None:
     assert not result.adopted
 
 
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "2008-12-10 00",  # 日付と時刻
+        "197-207 1991",  # ページ範囲と年
+        "10115 - 14199",  # 郵便番号の範囲
+        "3000 780103",
+    ],
+)
+def test_接頭辞なしでスペースを含む数字列は採用しない(raw: str) -> None:
+    """日付やページ範囲を拾っているため（KNOWN_ISSUES.md 参照）。"""
+    result = normalize_isbn("", raw)
+    assert result.pattern == UNKNOWN
+    assert not result.adopted
+
+
+@pytest.mark.parametrize(
+    ("prefix", "raw", "isbn"),
+    [
+        ("ISBN ", "0 521 31827 0", "0521318270"),  # 接頭辞があればスペース区切りを認める
+        ("", "978 1 84603 502 9", "9781846035029"),  # 978で始まればISBNと分かる
+    ],
+)
+def test_スペース区切りのISBNは採用する(prefix: str, raw: str, isbn: str) -> None:
+    result = normalize_isbn(prefix, raw)
+    assert result.adopted
+    assert result.isbn == isbn
+
+
 def test_雑誌コードは採用しない() -> None:
     assert not normalize_isbn("ISBN ", "4910123456789").adopted
 
