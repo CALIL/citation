@@ -33,14 +33,15 @@ class StreamResult:
     pages: int
     isbn_count: int
     error_count: int
+    duplicate_count: int
 
     nbytes: int
     """このストリームが占める圧縮後のバイト数（進捗表示用）。"""
 
 
-def _extract_stream(task: tuple[str, int, int]) -> StreamResult:
+def _extract_stream(task: tuple[str, int, int, bool]) -> StreamResult:
     """ワーカープロセスでストリーム1本を処理する。"""
-    path, start, end = task
+    path, start, end, unique = task
     with open(path, "rb") as f:
         f.seek(start)
         compressed = f.read(end - start)
@@ -49,27 +50,29 @@ def _extract_stream(task: tuple[str, int, int]) -> StreamResult:
     # str.splitlines() はU+2028などでも行を分けてしまい、逐次処理と結果がずれる。
     stream = io.TextIOWrapper(io.BytesIO(bz2.decompress(compressed)), encoding="utf-8")
 
-    extractor = Extractor()
+    extractor = Extractor(unique=unique)
     payload = "".join(record.to_json() + "\n" for record in extractor.extract(stream))
     return StreamResult(
         payload=payload,
         pages=extractor.pages,
         isbn_count=extractor.isbn_count,
         error_count=extractor.error_count,
+        duplicate_count=extractor.duplicate_count,
         nbytes=end - start,
     )
 
 
 def extract_streams(
-    path: str | Path, ranges: Sequence[tuple[int, int]], jobs: int
+    path: str | Path, ranges: Sequence[tuple[int, int]], jobs: int, unique: bool = False
 ) -> Iterator[StreamResult]:
     """ストリームを並列に処理し、ダンプ内の順序どおりに結果を返す。
 
     :param path: ダンプファイル
     :param ranges: :func:`citation.dump.stream_ranges` が返すストリームの範囲
     :param jobs: ワーカープロセス数
+    :param unique: 同じページの同じISBNを1件にまとめる
     """
-    tasks = [(str(path), start, end) for start, end in ranges]
+    tasks = [(str(path), start, end, unique) for start, end in ranges]
     batch_size = jobs * BATCH_FACTOR
 
     with ProcessPoolExecutor(max_workers=jobs) as pool:

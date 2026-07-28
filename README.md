@@ -26,9 +26,15 @@ Usage: citation [OPTIONS] INPUT_FILENAME EXPORT_FILENAME
 Options:
   --show-exclusion / --no-show-exclusion
                                   除外した項目を表示する
+  --unique / --no-unique          同じページに同じISBNが複数あれば1件にまとめる
   -j, --jobs INTEGER              並列数。既定はCPU数。1を指定すると逐次処理する
   --help                          Show this message and exit.
 ```
+
+1つのページで同じ出典を何度も参照していると、そのぶんレコードが増えます
+（jawiki-20260401で約9%が重複）。ISBNから記事を引く用途なら `--unique` を付けると
+（ページ, ISBN）単位にまとまります。どのセクションで参照されたかを分析したい場合は、
+`h1` / `h2` が失われるため既定のままにしてください。
 
 ```bash
 wget https://dumps.wikimedia.org/jawiki/20190420/jawiki-20190420-pages-articles-multistream.xml.bz

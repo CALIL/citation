@@ -46,16 +46,22 @@ class Extractor:
     完結する。ダンプをページ境界で分割して別々に処理しても結果は変わらない。
     """
 
-    def __init__(self, on_exclusion: ExclusionHandler | None = None) -> None:
-        """:param on_exclusion: 除外された候補を通知するコールバック"""
+    def __init__(self, on_exclusion: ExclusionHandler | None = None, unique: bool = False) -> None:
+        """
+        :param on_exclusion: 除外された候補を通知するコールバック
+        :param unique: 同じページで同じISBNが再び現れた場合に出力しない
+        """
         self.pages = 0
         self.isbn_count = 0
         self.error_count = 0
+        self.duplicate_count = 0
         self._on_exclusion = on_exclusion
+        self._unique = unique
         self._title: str | None = None
         self._h1: str | None = None
         self._h2: str | None = None
         self._skip_page = False
+        self._seen: set[str] = set()
 
     def extract(self, lines: Iterable[str]) -> Iterator[Record]:
         """行を順に読み、採用されたISBNをレコードとして返す。"""
@@ -67,6 +73,7 @@ class Extractor:
                 self._h1 = None
                 self._h2 = None
                 self._skip_page = False
+                self._seen.clear()
                 self.pages += 1
             elif not self._title:
                 for title in TITLE_RE.findall(line):
@@ -91,7 +98,15 @@ class Extractor:
             normalized = normalize_isbn(prefix, raw)
             if normalized.adopted:
                 self.isbn_count += 1
-                yield self._build_record(line, raw, normalized)
+                record = self._build_record(line, raw, normalized)
+                # ページはストリーム内で完結するので、並列処理でも同じページの重複を
+                # 取りこぼすことはない。正規化できなかったISBN（空文字）は対象外。
+                if self._unique and record.isbn:
+                    if record.isbn in self._seen:
+                        self.duplicate_count += 1
+                        continue
+                    self._seen.add(record.isbn)
+                yield record
             else:
                 self.error_count += 1
                 if self._on_exclusion is not None and prefix:

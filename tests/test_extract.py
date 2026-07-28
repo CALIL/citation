@@ -198,6 +198,30 @@ def test_ページ数と採否の件数を数える() -> None:
     assert len(records) == 1
 
 
+def test_uniqueで同じページの同じISBNをまとめる() -> None:
+    """表記が違っても正規化後のISBNが同じなら1件にする。"""
+    body = ["* ISBN 4-7722-1227-2", "* ISBN 978-4-7722-1227-4", "* ISBN 4-7722-1227-2"]
+    extractor = Extractor(unique=True)
+    records = list(extractor.extract(dump_page("重複のあるページ", body)))
+    assert len(records) == 1
+    assert extractor.duplicate_count == 2
+    assert extractor.isbn_count == 3  # 採用した数は重複を含めて数える
+
+
+def test_uniqueの重複判定はページをまたがない() -> None:
+    lines = dump_page("A", ["* ISBN 4-7722-1227-2"])
+    lines += dump_page("B", ["* ISBN 4-7722-1227-2"])
+    records = list(Extractor(unique=True).extract(lines))
+    assert [r.title for r in records] == ["A", "B"]
+
+
+def test_uniteを指定しなければ重複はそのまま出力する() -> None:
+    body = ["* ISBN 4-7722-1227-2", "* ISBN 4-7722-1227-2"]
+    extractor = Extractor()
+    assert len(list(extractor.extract(dump_page("重複", body)))) == 2
+    assert extractor.duplicate_count == 0
+
+
 def test_除外された候補が通知される() -> None:
     seen: list[Exclusion] = []
     extractor = Extractor(on_exclusion=seen.append)

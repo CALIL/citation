@@ -30,12 +30,14 @@ class Totals:
     pages: int = 0
     isbn_count: int = 0
     error_count: int = 0
+    duplicate_count: int = 0
 
 
 def _run_sequential(
     input_filename: str,
     export_file: TextIO,
     on_exclusion: ExclusionHandler | None,
+    unique: bool,
     bar: ProgressReporter,
 ) -> Totals:
     """ダンプを先頭から順に読んで処理する。
@@ -43,7 +45,7 @@ def _run_sequential(
     進捗は圧縮ファイル側の読み取り位置で測る。展開後のサイズは読み終わるまで
     分からないが、圧縮ファイルのサイズなら最初から分かるため。
     """
-    extractor = Extractor(on_exclusion=on_exclusion)
+    extractor = Extractor(on_exclusion=on_exclusion, unique=unique)
     with open(input_filename, "rb") as raw, bz2.open(raw, "rt", encoding="utf-8") as dump:
         reported = 0
         for count, record in enumerate(extractor.extract(dump), start=1):
@@ -52,7 +54,9 @@ def _run_sequential(
                 position = raw.tell()
                 bar.update(position - reported)
                 reported = position
-    return Totals(extractor.pages, extractor.isbn_count, extractor.error_count)
+    return Totals(
+        extractor.pages, extractor.isbn_count, extractor.error_count, extractor.duplicate_count
+    )
 
 
 def _run_parallel(
@@ -60,15 +64,17 @@ def _run_parallel(
     export_file: TextIO,
     ranges: list[tuple[int, int]],
     jobs: int,
+    unique: bool,
     bar: ProgressReporter,
 ) -> Totals:
     """ストリーム単位で並列に処理する。"""
     totals = Totals()
-    for result in extract_streams(input_filename, ranges, jobs):
+    for result in extract_streams(input_filename, ranges, jobs, unique):
         export_file.write(result.payload)
         totals.pages += result.pages
         totals.isbn_count += result.isbn_count
         totals.error_count += result.error_count
+        totals.duplicate_count += result.duplicate_count
         bar.update(result.nbytes)
     return totals
 
@@ -78,6 +84,11 @@ def _run_parallel(
 @click.argument("export_filename", type=click.Path(exists=False, dir_okay=False))
 @click.option("--show-exclusion/--no-show-exclusion", default=False, help="除外した項目を表示する")
 @click.option(
+    "--unique/--no-unique",
+    default=False,
+    help="同じページに同じISBNが複数あれば1件にまとめる",
+)
+@click.option(
     "-j",
     "--jobs",
     type=int,
@@ -85,7 +96,11 @@ def _run_parallel(
     help="並列数。既定はCPU数。1を指定すると逐次処理する",
 )
 def extract_citation(
-    input_filename: str, export_filename: str, show_exclusion: bool, jobs: int | None
+    input_filename: str,
+    export_filename: str,
+    show_exclusion: bool,
+    unique: bool,
+    jobs: int | None,
 ) -> None:
     """Wikipediaのダンプファイルから出典ISBNを抽出する"""
     click.echo("| extract_citation")
@@ -116,15 +131,17 @@ def extract_citation(
         click.progressbar(length=Path(input_filename).stat().st_size, label="| 抽出") as bar,
     ):
         if parallel:
-            totals = _run_parallel(input_filename, export_file, ranges, jobs, bar)
+            totals = _run_parallel(input_filename, export_file, ranges, jobs, unique, bar)
         else:
             totals = _run_sequential(
-                input_filename, export_file, show if show_exclusion else None, bar
+                input_filename, export_file, show if show_exclusion else None, unique, bar
             )
 
     click.echo("count_pages:" + str(totals.pages))
     click.echo("count_isbn:" + str(totals.isbn_count))
     click.echo("count_error:" + str(totals.error_count))
+    if unique:
+        click.echo("count_duplicate:" + str(totals.duplicate_count))
     click.secho("処理が完了しました", fg="green")
 
 
