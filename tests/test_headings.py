@@ -31,13 +31,32 @@ def test_見出しの実体参照を戻す(line: str, expected: tuple[int, str])
     assert parse_heading(line) == expected
 
 
-def test_1行に複数の見出しがあれば先頭のものを採用する() -> None:
-    assert parse_heading("== 第一章 == と == 第二章 ==") == (2, "第一章")
+def test_見出しに等号が含まれても途中で切れない() -> None:
+    """HTMLの属性など "=" を含む見出しがそのまま取れること。"""
+    line = '== Schools of thought <span class="anchor" id="x"></span> =='
+    assert parse_heading(line) == (2, 'Schools of thought <span class="anchor" id="x"></span>')
 
 
-def test_イコール4つ以上は見出し2として扱われる() -> None:
-    """先頭の "=" を読み飛ばした位置から "===" としてマッチするため。"""
-    assert parse_heading("==== 深い見出し ====") == (3, "深い見出し")
+def test_本文中の等号は見出しとみなさない() -> None:
+    """行全体が "=" で囲まれていなければ見出しではない。"""
+    assert parse_heading("本文中に == が出てくる場合") is None
+    assert parse_heading("数式 a == b について") is None
+
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        ("==== 深い見出し ====", (4, "深い見出し")),
+        ("===== 5段階 =====", (5, "5段階")),
+    ],
+)
+def test_4段階以上の見出しもレベルを返す(line: str, expected: tuple[int, str]) -> None:
+    """呼び出し側で3段階以上をまとめて見出し2として扱う。"""
+    assert parse_heading(line) == expected
+
+
+def test_閉じる等号の数が違えば見出しの一部とみなす() -> None:
+    assert parse_heading("== 参考文献 ===") == (2, "参考文献 =")
 
 
 @pytest.mark.parametrize(

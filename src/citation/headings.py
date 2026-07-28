@@ -7,8 +7,9 @@ ISBNが本文のどのセクションに現れたかは、それが出典なの�
 import html
 import re
 
-#: 見出し行にマッチする正規表現。1つ目のグループが "==" の数（見出しレベル）。
-HEADING_RE = re.compile("([=]{2,3})([^=]+)(.*)")
+#: 見出し行にマッチする正規表現。行全体が同じ数の "=" で囲まれていることを求める。
+#: 1つ目のグループが "=" の数（見出しレベル）。
+HEADING_RE = re.compile(r"^(={2,6})\s*(.+?)\s*\1\s*$")
 
 #: 出典が列挙されているとみなす見出し。
 #:
@@ -95,21 +96,17 @@ NON_REF_HEADINGS = frozenset(
 def parse_heading(line: str) -> tuple[int, str] | None:
     """見出し行なら (レベル, 見出し文字列) を返す。見出しでなければ None。
 
-    レベルは "==" なら2、"===" なら3。末尾を ``.*`` で受けるため1行につき最大1つしか
-    マッチせず、複数の見出しが並んでいても先頭のものだけを見る。"====" のように
-    4つ以上並んだ場合は、先頭の "=" を読み飛ばした位置から "===" としてマッチするため
-    レベル3になる。
+    行の全体が同じ数の "=" で囲まれている場合だけを見出しとみなす。そのため見出しに
+    "=" が含まれていても途中で切れず（`== A <span id="x"></span> ==` のようなケース）、
+    本文中にたまたま "==" が現れただけの行を見出しと誤認することもない。
 
     ダンプはXMLなので本文がエスケープされている。"Q&amp;A" のような見出しをそのまま
     返さないよう、実体参照を戻してから空白を落とす。
     """
-    if "==" not in line:
+    match = HEADING_RE.match(line.strip())
+    if match is None:
         return None
-    matches = HEADING_RE.findall(line)
-    if not matches:
-        return None
-    marker, text, _ = matches[0]
-    return len(marker), html.unescape(text).strip()
+    return len(match.group(1)), html.unescape(match.group(2)).strip()
 
 
 def is_reference_heading(heading: str) -> bool:

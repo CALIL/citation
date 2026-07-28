@@ -140,6 +140,7 @@ class Extractor:
             self._h1 = text
             self._h2 = None
         else:
+            # 3段階以上はまとめて見出し2として扱う
             self._h2 = text
 
     def _build_record(self, line: str, raw: str, normalized: NormalizedIsbn) -> Record:
