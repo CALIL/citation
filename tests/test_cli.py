@@ -5,7 +5,46 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from citation.cli import extract_citation
+from citation import cli
+from citation.cli import cgroup_cpu_limit, default_jobs, extract_citation
+
+
+@pytest.mark.parametrize(
+    ("content", "expected"),
+    [
+        ("400000 100000\n", 4),  # CPU 4個分のquota
+        ("50000 100000\n", 1),  # 0.5個分でも最低1は返す
+        ("max 100000\n", None),  # 制限なし
+        ("こわれている", None),
+        ("400000 0\n", None),  # periodが0
+    ],
+)
+def test_cgroupのCPU制限を読む(
+    content: str, expected: int | None, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "cpu.max"
+    path.write_text(content, encoding="utf-8")
+    monkeypatch.setattr(cli, "CGROUP_CPU_MAX", path)
+    assert cgroup_cpu_limit() == expected
+
+
+def test_cgroupが無ければ制限なしとみなす(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """WindowsやmacOS、cgroup v1の環境ではファイルが存在しない。"""
+    monkeypatch.setattr(cli, "CGROUP_CPU_MAX", tmp_path / "存在しない")
+    assert cgroup_cpu_limit() is None
+
+
+def test_並列数はCPU制限を超えない(monkeypatch: pytest.MonkeyPatch) -> None:
+    """コンテナのquotaがホストの論理CPU数より小さいときはquotaに従う。"""
+    monkeypatch.setattr(cli.os, "process_cpu_count", lambda: 64)
+    monkeypatch.setattr(cli, "cgroup_cpu_limit", lambda: 8)
+    assert default_jobs() == 8
+
+
+def test_制限が無ければ論理CPU数を使う(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(cli.os, "process_cpu_count", lambda: 28)
+    monkeypatch.setattr(cli, "cgroup_cpu_limit", lambda: None)
+    assert default_jobs() == 28
 
 
 @pytest.mark.parametrize("jobs", ["0", "-5"])

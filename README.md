@@ -163,11 +163,26 @@ uv run python tools/backfill.py extract --watch
 | [dumps.wikimedia.org](https://dumps.wikimedia.org/) | 直近5〜7か月分 |
 | [Internet Archive](https://archive.org/details/wikimediadownloads) | jawiki・enwikiとも2014年11月〜2022年5月がほぼ毎月。ほかにjawikiの2011年、enwikiの2008〜2010年 |
 | [公式のヒストリカルアーカイブ](https://dumps.wikimedia.org/archive/) | enwikiの20080103と20100312（`pages-articles`） |
+| `gs://isbn-citation` | 上のどこにも残っていないダンプの控え（jawikiの2019年〜、enwikiの2024年〜） |
 
 Internet Archive のミラーは2022年5月で止まっているため、**2012年・2013年・2023年の
 ダンプはどこにも残っておらず再処理できない**。2011年以前のダンプは multistream が無いため
 逐次処理になり、`<ns>` を持たないため記事以外の名前空間も混ざる
 （[KNOWN_ISSUES.md](KNOWN_ISSUES.md) の25番）。
+
+### ダンプの控えを残す方針
+
+公式は数か月でダンプを消し、Internet Archive のミラーも止まっているため、**新しく処理した
+ダンプはどこにも残らない**。実際に jawiki-20190420 から 20200801 までは公式もIAも消えており、
+このバケットに置いた控えだけが残っている。そのため次の基準で控えを置く。
+
+- **置く**: 他に現存するコピーが無いもの（jawikiの2019年以降、enwikiの2024年以降）。
+  処理した直後に上げる。上げ忘れるとその日付は二度と再処理できなくなる
+- **置かない**: Internet Archive にあるもの（2008〜2022年）。`tools/backfill.py` が
+  md5照合付きで取り直せるので、同じものを二重に持たない
+
+バケットのライフサイクルで30日後にNearline、100日後にArchiveへ落ちる。
+旧ロジックで生成した出力は `archive/` に退避してある（`archive/NOTE.txt` に違いを記載）。
 
 注意事項
 ----
@@ -175,6 +190,7 @@ Internet Archive のミラーは2022年5月で止まっているため、**2012�
 - チェックデジットの一致により、ISBN以外を誤判定する場合があります。ただし、ISBNから参照記事を検索する目的では問題とならないため許容しています
 - チェックデジット間違いのISBNは抽出されません
 - 抽出精度に関する未対応の問題は [KNOWN_ISSUES.md](KNOWN_ISSUES.md) にまとめてあります
+- 抽出結果が変わる変更は [CHANGELOG.md](CHANGELOG.md) に記録しています。過去のデータと比較する場合はバージョンを揃えてください
 
 開発
 ----

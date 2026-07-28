@@ -1,6 +1,6 @@
 [project]
 name = "citation"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Wikipediaのダンプファイルから出典ISBNを抽出するツール"
 authors = [{ name = "CALIL Inc." }]
 requires-python = ">=3.14"
@@ -16,6 +16,10 @@ citation-audit = "citation.audit:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+# バージョンは src/citation/__init__.py の __version__ を唯一の出どころにする。
+[tool.hatch.version]
+path = "src/citation/__init__.py"
 
 [dependency-groups]
 dev = [

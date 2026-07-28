@@ -14,6 +14,7 @@ fetch と extract は冪等。ダンプがサイズもmd5も一致していれ�
 ことを前提にしている。
 """
 
+import base64
 import hashlib
 import json
 import shutil
@@ -55,8 +56,8 @@ class Target:
     """再処理するダンプ1本。
 
     :param kind: 取得元。``ia`` はInternet Archive、``official`` は公式の通常ディレクトリ、
-        ``archive`` は公式のヒストリカルアーカイブ、``local`` は配布が終わっていて手元の
-        ファイルしか残っていないもの
+        ``archive`` は公式のヒストリカルアーカイブ、``gcs`` は過去に自分で保存した
+        `gs://isbn-citation`、``local`` はどこにも無く手元のファイルしか残っていないもの
     :param mode: ``multi`` はmultistream（ストリーム単位で並列処理できる）、``single`` は
         multistreamが無かった時代のダンプで逐次処理になる
     """
@@ -105,6 +106,8 @@ class Target:
             return OFFICIAL_URL.format(wiki=self.wiki, date=self.date, name=self.dump_name)
         if self.kind == "archive":
             return ARCHIVE_URL.format(wiki=self.wiki, date=self.date, name=self.dump_name)
+        if self.kind == "gcs":
+            return GCS_URL.format(name=self.dump_name)
         return None
 
     @property
@@ -159,23 +162,45 @@ TARGETS: list[Target] = [
     Target(2025, "enwiki", "20250601", "local", "multi"),
     Target(2026, "jawiki", "20260401", "official", "multi"),
     Target(2026, "enwiki", "20260401", "official", "multi"),
-    # 既刊の非年次日付。IAに残っているので最新ロジックに揃えられる。
+    # 既刊の非年次日付。IAに残っているものはIAから取る（下り課金がかからない）。
     Target(2020, "jawiki", "20201201", "ia", "multi", optional=True),
     Target(2021, "jawiki", "20210920", "ia", "multi", optional=True),
     Target(2021, "jawiki", "20211120", "ia", "multi", optional=True),
     Target(2021, "enwiki", "20211120", "ia", "multi", optional=True),
+    # 公式もIAも消えているが、2019年から自分でGCSに保存していたぶんが残っている。
+    # gs://isbn-citation にあるのはjawikiのダンプだけで、enwikiは1本も無い。
+    Target(2019, "jawiki", "20190420", "gcs", "multi", optional=True),
+    Target(2019, "jawiki", "20190601", "gcs", "multi", optional=True),
+    Target(2019, "jawiki", "20190801", "gcs", "multi", optional=True),
+    Target(2019, "jawiki", "20191220", "gcs", "multi", optional=True),
+    Target(2020, "jawiki", "20200301", "gcs", "multi", optional=True),
+    Target(2020, "jawiki", "20200801", "gcs", "multi", optional=True),
+    Target(2022, "jawiki", "20221220", "gcs", "multi", optional=True),
 ]
 
 
-def _select(wiki: str | None, year: int | None, date: str | None, optional: bool) -> list[Target]:
-    """絞り込み条件に合う対象を、日付順（同じ日付なら日本語版が先）に返す。"""
+def _select(
+    wiki: str | None,
+    year: int | None,
+    date: str | None,
+    optional: bool,
+    only_optional: bool = False,
+) -> list[Target]:
+    """絞り込み条件に合う対象を、日付順（同じ日付なら日本語版が先）に返す。
+
+    ``only_optional`` は年次シリーズ以外だけを選ぶ。年次シリーズを処理している
+    プロセスと同時に走らせても、同じ出力を二重に書かないようにするために使う。
+    """
+    # 日付を明示したときと --only-optional のときは、年次シリーズ以外も対象に入れる。
+    include_optional = optional or only_optional or date is not None
     targets = [
         target
         for target in TARGETS
         if (wiki is None or target.wiki == wiki)
         and (year is None or target.year == year)
         and (date is None or target.date == date)
-        and (optional or not target.optional or date is not None)
+        and (include_optional or not target.optional)
+        and (not only_optional or target.optional)
     ]
     return sorted(targets, key=lambda target: (target.date, target.wiki != "jawiki"))
 
@@ -196,6 +221,18 @@ def _remote_info(target: Target) -> tuple[int | None, str | None]:
                 size = entry.get("size")
                 return (int(size) if size else None), entry.get("md5")
         return None, None
+
+    if target.kind == "gcs":
+        # GCSはmd5をbase64で x-goog-hash に載せる。crc32cと2行に分かれて来る。
+        with _open(target.url, method="HEAD") as response:
+            size = int(response.headers["Content-Length"])
+            hashes = response.headers.get_all("x-goog-hash") or []
+        for line in hashes:
+            for part in line.split(","):
+                name, _, value = part.strip().partition("=")
+                if name == "md5":
+                    return size, base64.b64decode(value).hex()
+        return size, None
 
     size = None
     with _open(target.url, method="HEAD") as response:
@@ -357,6 +394,11 @@ optional_option = click.option(
     default=False,
     help="年次シリーズ以外（既刊データを揃えるための日付）も対象にする",
 )
+only_optional_option = click.option(
+    "--only-optional",
+    is_flag=True,
+    help="年次シリーズ以外だけを対象にする（年次シリーズの処理と並走させるとき）",
+)
 
 
 @click.group()
@@ -369,11 +411,14 @@ def backfill() -> None:
 @year_option
 @date_option
 @optional_option
-def list_targets(wiki: str | None, year: int | None, date: str | None, optional: bool) -> None:
+@only_optional_option
+def list_targets(
+    wiki: str | None, year: int | None, date: str | None, optional: bool, only_optional: bool
+) -> None:
     """対象と手元の状態を一覧表示する。"""
     counts = _load_counts()
     click.echo(f"{'年':<6}{'wiki':<8}{'日付':<10}{'形式':<8}{'ダンプ':<12}{'出力':<12}件数")
-    for target in _select(wiki, year, date, optional):
+    for target in _select(wiki, year, date, optional, only_optional):
         dump = _gigabytes(target.dump_path.stat().st_size) if target.dump_path.exists() else "-"
         output = (
             _gigabytes(target.output_path.stat().st_size) if target.output_path.exists() else "-"
@@ -390,10 +435,18 @@ def list_targets(wiki: str | None, year: int | None, date: str | None, optional:
 @year_option
 @date_option
 @optional_option
+@only_optional_option
 @click.option("-j", "--jobs", type=click.IntRange(min=1), default=2, help="同時ダウンロード数")
-def fetch(wiki: str | None, year: int | None, date: str | None, optional: bool, jobs: int) -> None:
+def fetch(
+    wiki: str | None,
+    year: int | None,
+    date: str | None,
+    optional: bool,
+    only_optional: bool,
+    jobs: int,
+) -> None:
     """ダンプをダウンロードしてmd5を照合する。"""
-    targets = _select(wiki, year, date, optional)
+    targets = _select(wiki, year, date, optional, only_optional)
     if jobs == 1:
         for target in targets:
             _fetch(target)
@@ -409,13 +462,16 @@ def fetch(wiki: str | None, year: int | None, date: str | None, optional: bool, 
 @year_option
 @date_option
 @optional_option
-def verify(wiki: str | None, year: int | None, date: str | None, optional: bool) -> None:
+@only_optional_option
+def verify(
+    wiki: str | None, year: int | None, date: str | None, optional: bool, only_optional: bool
+) -> None:
     """手元にあるダンプのmd5を照合して、処理してよい印を付ける。
 
     別のプロセスがダウンロードしている場合や、印を付ける前のコードで取得した場合に使う。
     サイズが取得元と一致しないものはまだ途中とみなして触らない。
     """
-    for target in _select(wiki, year, date, optional):
+    for target in _select(wiki, year, date, optional, only_optional):
         if target.kind == "local" or target.verified_path.exists():
             continue
         if not target.dump_path.exists():
@@ -438,16 +494,22 @@ def verify(wiki: str | None, year: int | None, date: str | None, optional: bool)
 @year_option
 @date_option
 @optional_option
+@only_optional_option
 @click.option("--watch", is_flag=True, help="ダウンロードが終わるのを待ちながら処理し続ける")
 def extract(
-    wiki: str | None, year: int | None, date: str | None, optional: bool, watch: bool
+    wiki: str | None,
+    year: int | None,
+    date: str | None,
+    optional: bool,
+    only_optional: bool,
+    watch: bool,
 ) -> None:
     """手元のダンプを処理して件数を記録する。
 
     ``--watch`` を付けると、ダウンロードが済んだものから順に処理して、残りが無くなるまで
     待ち続ける。抽出はCPUを使い切るので、この1プロセスに直列で処理させる。
     """
-    targets = _select(wiki, year, date, optional)
+    targets = _select(wiki, year, date, optional, only_optional)
     counts = _load_counts()
     # 手動で処理した出力など、件数が記録されていないものを先に数えておく。
     for target in targets:
@@ -497,8 +559,10 @@ def table(optional: bool) -> None:
         records = counts.get((target.wiki, target.date))
         if records is None:
             continue
+        # ダンプのリンクは実際に取得できる場所へ張る。公式に残っていない日付は
+        # Internet Archive か gs://isbn-citation のコピーを指す。
         url = target.url
-        dump = f"[{target.dump_name}]({url})" if url else f"{target.dump_name} †"
+        dump = f"[{target.item}]({url})" if url else target.item
         output = f"[{target.output_name}]({GCS_URL.format(name=target.output_name)})"
         click.echo(f"| {dump} | {output} | {records:,} |")
 

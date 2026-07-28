@@ -16,6 +16,35 @@ from citation.record import Exclusion
 #: 逐次処理で進捗表示を更新するレコード数の間隔。
 PROGRESS_INTERVAL = 1000
 
+#: cgroup v2 がCPU制限を書き出すファイル。"<quota> <period>" か "max <period>"。
+CGROUP_CPU_MAX = Path("/sys/fs/cgroup/cpu.max")
+
+
+def cgroup_cpu_limit() -> int | None:
+    """cgroupが課しているCPU数の上限。制限が無ければ None。
+
+    ``os.process_cpu_count()`` はCPU affinityしか見ないため、KubernetesやDockerが
+    cgroupのquotaで絞っていてもホストの論理CPU数を返してしまう。そのまま並列数に
+    使うと制限を超えるプロセスが立ち上がり、throttlingで却って遅くなる。
+    """
+    try:
+        quota, period = CGROUP_CPU_MAX.read_text().split()
+    except OSError, ValueError:
+        return None  # cgroup v2 が無い環境（Windows、macOS、cgroup v1）
+    if quota == "max":
+        return None  # 制限なし
+    try:
+        return max(1, int(quota) // int(period))
+    except ValueError, ZeroDivisionError:
+        return None
+
+
+def default_jobs() -> int:
+    """既定の並列数。コンテナのCPU制限があればそれに従う。"""
+    available = os.process_cpu_count() or 1
+    limit = cgroup_cpu_limit()
+    return min(available, limit) if limit else available
+
 
 class ProgressReporter(Protocol):
     """click.progressbar のうち、進捗の更新に使う部分だけを表す。"""
@@ -108,7 +137,7 @@ def extract_citation(
     click.echo("| 出力するファイル:" + click.format_filename(export_filename))
 
     if jobs is None:
-        jobs = os.process_cpu_count() or 1
+        jobs = default_jobs()
 
     # 除外項目はワーカープロセスからは通知できないため、表示する場合は逐次処理する。
     ranges: list[tuple[int, int]] = []
