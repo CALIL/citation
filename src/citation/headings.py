@@ -4,6 +4,7 @@ ISBNが本文のどのセクションに現れたかは、それが出典なの�
 見分ける手がかりになるため、直近の見出しを追跡してスコアの補正に使う。
 """
 
+import html
 import re
 
 #: 見出し行にマッチする正規表現。1つ目のグループが "==" の数（見出しレベル）。
@@ -73,6 +74,9 @@ def parse_heading(line: str) -> tuple[int, str] | None:
     マッチせず、複数の見出しが並んでいても先頭のものだけを見る。"====" のように
     4つ以上並んだ場合は、先頭の "=" を読み飛ばした位置から "===" としてマッチするため
     レベル3になる。
+
+    ダンプはXMLなので本文がエスケープされている。"Q&amp;A" のような見出しをそのまま
+    返さないよう、実体参照を戻してから空白を落とす。
     """
     if "==" not in line:
         return None
@@ -80,7 +84,7 @@ def parse_heading(line: str) -> tuple[int, str] | None:
     if not matches:
         return None
     marker, text, _ = matches[0]
-    return len(marker), text.strip()
+    return len(marker), html.unescape(text).strip()
 
 
 def is_reference_heading(heading: str) -> bool:

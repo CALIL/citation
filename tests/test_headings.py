@@ -19,6 +19,18 @@ def test_見出しの解析(line: str, expected: tuple[int, str] | None) -> None
     assert parse_heading(line) == expected
 
 
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        ("== ゲーム&amp;ウォッチ版 ==", (2, "ゲーム&ウォッチ版")),
+        ("== &quot;通称&quot; ==", (2, '"通称"')),
+        ("=== A&amp;B ===", (3, "A&B")),
+    ],
+)
+def test_見出しの実体参照を戻す(line: str, expected: tuple[int, str]) -> None:
+    assert parse_heading(line) == expected
+
+
 def test_1行に複数の見出しがあれば先頭のものを採用する() -> None:
     assert parse_heading("== 第一章 == と == 第二章 ==") == (2, "第一章")
 

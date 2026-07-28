@@ -1,5 +1,6 @@
 """ダンプの行ストリームから出典ISBNを抽出する状態機械。"""
 
+import html
 import re
 from collections.abc import Callable, Iterable, Iterator
 
@@ -77,7 +78,8 @@ class Extractor:
                 self.pages += 1
             elif not self._title:
                 for title in TITLE_RE.findall(line):
-                    self._title = title
+                    # ダンプはXMLなのでタイトルもエスケープされている
+                    self._title = html.unescape(title)
             elif not self._skip_page:
                 yield from self._scan(line)
 

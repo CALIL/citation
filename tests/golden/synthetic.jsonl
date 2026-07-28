@@ -51,5 +51,7 @@
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "English Article", "score": 1.9, "h1": "Works", "h2": null, "is_ref": false}
 {"isbn": "9780000003", "raw": "9780000003", "title": "978で始まるISBN", "score": 1.9, "h1": "参考文献", "h2": null, "is_ref": true}
 {"isbn": "9784062577", "raw": "9784062577", "title": "978で始まるISBN", "score": 1.9, "h1": "参考文献", "h2": null, "is_ref": true}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "ゲーム&ウォッチ", "score": 2.4, "h1": "ゲーム&ウォッチ版", "h2": null, "is_ref": false}
+{"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "ゲーム&ウォッチ", "score": 2.4, "h1": "息子、または\"通称\"", "h2": null, "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "見出しの継承", "score": 2.4, "h1": "第一章", "h2": "第一節", "is_ref": false}
 {"isbn": "4772212272", "raw": "4-7722-1227-2", "title": "見出しの継承", "score": 2.4, "h1": "第二章", "h2": null, "is_ref": false}

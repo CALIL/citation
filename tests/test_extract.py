@@ -34,6 +34,18 @@ def test_タイトルと見出しがレコードに入る() -> None:
     assert record.is_ref
 
 
+def test_タイトルの実体参照を戻す() -> None:
+    """ダンプはXMLなのでタイトルもエスケープされている。"""
+    (record,) = extract(dump_page("ゲーム&amp;ウォッチ", ["* ISBN 4-7722-1227-2"]))
+    assert record.title == "ゲーム&ウォッチ"
+
+
+def test_見出しの実体参照を戻す() -> None:
+    body = ["== 息子、または&quot;通称&quot; ==", "* ISBN 4-7722-1227-2"]
+    (record,) = extract(dump_page("A", body))
+    assert record.h1 == '息子、または"通称"'
+
+
 def test_ページ境界で状態がリセットされる() -> None:
     lines = dump_page("前のページ", ["== 参考文献 ==", "* ISBN 4-7722-1227-2"])
     lines += dump_page("次のページ", ["* ISBN 4-7722-1227-2"])
