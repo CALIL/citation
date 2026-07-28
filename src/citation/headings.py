@@ -79,11 +79,15 @@ NON_REF_HEADINGS = frozenset(
         "出版物",
         "写真集",
         "ビブリオグラフィ",
-        # 英語版
+        # 英語版。日本語版の「既刊一覧」「著作」に相当する見出し
         "works",
         "publications",
         "selected works",
         "selected publications",
+        "published works",
+        "collected editions",
+        "volume list",
+        "volumes",
     }
 )
 

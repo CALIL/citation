@@ -86,6 +86,10 @@ def test_出典セクションではない見出し(heading: str) -> None:
         "写真集",
         "Works",
         "Publications",
+        "Collected editions",
+        "Published works",
+        "Volume list",
+        "Volumes",
     ],
 )
 def test_著作一覧の見出し(heading: str) -> None:
