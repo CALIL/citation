@@ -28,9 +28,12 @@ REF_TAG = "&lt;ref"
 #: 大文字小文字と空白が揺れるため正規表現で吸収する。波括弧を1つ以上としているのは、
 #: 表記ゆれを吸収する前の "{Cite book" という部分一致の挙動を包含するため。
 #:
+#: 種類は問わない。ISBNが書かれた行にciteテンプレートがあるなら、それが journal でも
+#: encyclopedia でも出典を示していることに変わりはないため。
+#:
 #: {{Citation}} も出典テンプレートだが、出典が無いことを示す {{Citation needed}} と
 #: 紛らわしい。引数の区切りか閉じ括弧が直後に来る場合だけを拾って区別する。
-CITE_TEMPLATE_RE = re.compile(r"\{\s*(?:cite\s*book|citation\s*[|}])", re.IGNORECASE)
+CITE_TEMPLATE_RE = re.compile(r"\{\s*(?:cite[\s_]+[a-z]|citation\s*[|}])", re.IGNORECASE)
 
 #: 除外された候補を受け取るコールバック。
 ExclusionHandler = Callable[[Exclusion], None]

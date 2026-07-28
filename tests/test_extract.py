@@ -63,7 +63,32 @@ def test_refタグがあれば出典とみなす() -> None:
 
 @pytest.mark.parametrize(
     "markup",
-    ["{{Cite book", "{{cite book", "{{Cite Book", "{{ cite book", "{{cite  book", "{Cite book"],
+    [
+        "{{cite journal",
+        "{{cite encyclopedia",
+        "{{cite report",
+        "{{cite magazine",
+        "{{cite thesis",
+        "{{cite web",
+    ],
+)
+def test_書籍以外のciteテンプレートも出典とみなす(markup: str) -> None:
+    """種類を問わず、citeテンプレートは出典を示すマークアップとして扱う。"""
+    (record,) = extract(dump_page("A", ["* " + markup + "|isbn=4-7722-1227-2}}"]))
+    assert record.is_ref
+
+
+@pytest.mark.parametrize(
+    "markup",
+    [
+        "{{Cite book",
+        "{{cite book",
+        "{{Cite Book",
+        "{{ cite book",
+        "{{cite  book",
+        "{{cite_book",
+        "{Cite book",
+    ],
 )
 def test_citeテンプレートの表記ゆれを吸収する(markup: str) -> None:
     (record,) = extract(dump_page("A", ["* " + markup + "|isbn=4-7722-1227-2}}"]))
