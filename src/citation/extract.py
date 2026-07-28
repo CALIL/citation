@@ -36,6 +36,14 @@ REF_TAG = "&lt;ref"
 #: 紛らわしい。引数の区切りか閉じ括弧が直後に来る場合だけを拾って区別する。
 CITE_TEMPLATE_RE = re.compile(r"\{\s*(?:cite[\s_]+[a-z]|citation\s*[|}])", re.IGNORECASE)
 
+#: citeテンプレートの著者パラメータ。
+#:
+#: 出典として挙げる文献には著者を書くが、作品一覧では著者が記事の主題そのものなので
+#: 省略される。jawiki-20260401 で見出しから分類して測ったところ、出典セクションの
+#: ISBN行では44.6%が著者パラメータを持つのに対し、作品一覧セクションでは4.0%しかない。
+#: 見出しの辞書に載っていないセクションでも出典らしさを測れる手がかりになる。
+AUTHOR_PARAM_RE = re.compile(r"\|\s*(?:author|last|editor|著者|編者)", re.IGNORECASE)
+
 #: 除外された候補を受け取るコールバック。
 ExclusionHandler = Callable[[Exclusion], None]
 
@@ -144,6 +152,11 @@ class Extractor:
 
         is_ref = REF_TAG in line or CITE_TEMPLATE_RE.search(line) is not None
         if is_ref:
+            score += 0.5
+
+        # 著者が書かれているかどうかは、出典か作品一覧かを見分ける手がかりになる。
+        # is_ref は変えず、確からしさだけを補正する。
+        if AUTHOR_PARAM_RE.search(line):
             score += 0.5
 
         if self._h1:

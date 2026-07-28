@@ -151,6 +151,29 @@ def test_採用後の減点でスコアが閾値を下回ることがある() ->
     assert record.score == 0.5
 
 
+@pytest.mark.parametrize(
+    "param", ["|author=山田太郎", "|last=Yamada", "|著者=山田太郎", "|editor=編"]
+)
+def test_著者が書かれていればスコアを加点する(param: str) -> None:
+    """出典として挙げる文献は著者を書くが、作品一覧では省略される。"""
+    line = "* {{Cite book" + param + "|title=地理学|isbn=4-7722-1227-2}}"
+    (record,) = extract(dump_page("A", [line]))
+    assert record.score == pytest.approx(3.4)  # 2.4 + refマークアップ0.5 + 著者0.5
+
+
+def test_著者がなければ加点しない() -> None:
+    line = "* {{Cite book|title=地理学|isbn=4-7722-1227-2}}"
+    (record,) = extract(dump_page("A", [line]))
+    assert record.score == pytest.approx(2.9)
+
+
+def test_著者の有無は出典判定そのものは変えない() -> None:
+    """スコアだけを補正し、is_ref は従来どおりマークアップと見出しで決める。"""
+    body = ["== 作品リスト ==", "* {{Cite book|author=山田太郎|title=地理学|isbn=4-7722-1227-2}}"]
+    (record,) = extract(dump_page("作品", body))
+    assert not record.is_ref
+
+
 def test_スコアに浮動小数点の誤差が残らない() -> None:
     """0.9 + 0.5 - 0.5 が 0.8999999999999999 にならないこと。"""
     (record,) = extract(dump_page("作品", ["== 作品リスト ==", "* ISBN 0-230-22620-5"]))
