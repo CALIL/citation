@@ -8,7 +8,7 @@ from citation.headings import (
     is_reference_heading,
     parse_heading,
 )
-from citation.isbn import NormalizedIsbn, find_isbn_candidates, normalize_isbn, to_isbn10
+from citation.isbn import NormalizedIsbn, canonical_isbn, find_isbn_candidates, normalize_isbn
 from citation.record import Exclusion, Record
 
 #: ページの開始行。ダンプのインデントは固定なので完全一致で判定できる。
@@ -137,7 +137,7 @@ class Extractor:
         # 0.9 や 0.5 を足し引きすると二進小数で表せない端数が残る（0.9 + 0.5 - 0.5 が
         # 0.8999999999999999 になる）ため、記録する前に丸める。
         return Record(
-            isbn=to_isbn10(normalized.isbn),
+            isbn=canonical_isbn(normalized.isbn),
             raw=raw.strip(),
             title=self._title or "",
             score=round(score, 1),

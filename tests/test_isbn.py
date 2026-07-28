@@ -6,7 +6,7 @@
 
 import pytest
 
-from citation.isbn import UNKNOWN, find_isbn_candidates, normalize_isbn, to_isbn10
+from citation.isbn import UNKNOWN, canonical_isbn, find_isbn_candidates, normalize_isbn
 
 #: (本文の表記, 期待するパターン名, 期待するISBN, 期待するスコア)
 #: スコアは接頭辞 "ISBN " があることによる +0.9 を含む。
@@ -14,6 +14,7 @@ PATTERNS = [
     ("4-7722-1227-2", "I10", "4772212272", 2.4),
     ("4-00-000008-X", "I10", "400000008X", 2.9),
     ("978-4-7722-1227-4", "I13", "9784772212274", 1.9),
+    ("979-8-9878-9940-3", "I13", "9798987899403", 1.9),
     ("4772212274", "I13(978+)", "9784772212274", 1.9),
     ("1234772212272", "I10(978-)", "4772212272", 1.4),
     ("84772212274", "I13(97+)", "9784772212274", 1.4),
@@ -79,8 +80,8 @@ def test_雑誌コードは採用しない() -> None:
 
 
 def test_978で始まるISBN10はそのまま返す() -> None:
-    """isbnlibのto_isbn10()は先頭3文字だけでISBN-13と誤認する（KNOWN_ISSUES.md 参照）。"""
-    assert to_isbn10("9784062577") == "9784062577"
+    """isbnlibの to_isbn10() は先頭3文字だけでISBN-13と誤認する（KNOWN_ISSUES.md 参照）。"""
+    assert canonical_isbn("9784062577") == "9784062577"
 
 
 @pytest.mark.parametrize(
@@ -89,11 +90,13 @@ def test_978で始まるISBN10はそのまま返す() -> None:
         ("9784772212274", "4772212272"),  # ISBN-13から変換
         ("4772212272", "4772212272"),  # すでにISBN-10
         ("400000008X", "400000008X"),  # チェックデジットがX
+        ("9798987899403", "9798987899403"),  # 979は対応するISBN-10が無いので13桁のまま
+        ("9790014006723", "9790014006723"),  # 楽譜のISMN（979-0）も同様
         ("9771234567003", ""),  # ISBNではない（雑誌のバーコード）
     ],
 )
-def test_isbn10への正規化(isbn: str, expected: str) -> None:
-    assert to_isbn10(isbn) == expected
+def test_出力用ISBNへの正規化(isbn: str, expected: str) -> None:
+    assert canonical_isbn(isbn) == expected
 
 
 @pytest.mark.parametrize(

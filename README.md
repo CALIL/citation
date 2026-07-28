@@ -70,13 +70,17 @@ uv run citation-audit diff before.jsonl after.jsonl
 
 | 項目   | 型          | 概要                                                                                     |
 |--------|-------------|------------------------------------------------------------------------------------------| 
-| isbn   | String      | 正規化されたISBN（ISBN-10）                                                              |
+| isbn   | String      | 正規化されたISBN（原則ISBN-10。979で始まるものはISBN-13）                                |
 | raw    | String      | 解析される元のISBN表記                                                                   |
 | title  | String      | Wikipediaのページ名                                                                      |
 | score  | Number      | 独自指標により算出されたISBNの正確さ<br>（スコアが低い場合は、誤って検出した場合がある） |
 | h1     | String/null | 見出し1                                                                                  |
 | h2     | String/null | 見出し2                                                                                  |
 | is_ref | Boolean     | 出典であることが明記されているか（作品リストなどではfalse）                              |
+
+`isbn` は原則としてISBN-10に揃えていますが、979で始まるISBN-13だけは13桁のまま出力します。
+979は2007年に追加されたプレフィックスで、ISBN-10の番号空間に対応する番号が存在しないためです
+（jawiki-20260401で約660件）。
 
 ### スコアについて
 

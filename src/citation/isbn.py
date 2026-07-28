@@ -97,11 +97,9 @@ def normalize_isbn(prefix: str, raw: str) -> NormalizedIsbn:
         if isbn.startswith("491"):
             pattern = "雑誌コード"
             score = -1
-        elif (
-            (isbn.startswith("978") or isbn.startswith("977"))
-            and "X" not in isbn
-            and isbnlib.is_isbn13(isbn)
-        ):
+        elif "X" not in isbn and isbnlib.is_isbn13(isbn):
+            # is_isbn13() が 978/979 のプレフィックスとチェックデジットの両方を検証する。
+            # 977（雑誌のバーコード）はこの関数が弾くため、ここには入らない。
             pattern = "I13"
             score += 1.0
         elif isbnlib.is_isbn10(isbn[3:]):
@@ -149,8 +147,11 @@ def find_isbn_candidates(line: str) -> list[tuple[str, str]]:
     return ISBN_RE.findall(line)
 
 
-def to_isbn10(isbn: str) -> str:
-    """ISBN-10に正規化する。変換できない場合は空文字。
+def canonical_isbn(isbn: str) -> str:
+    """出力用のISBNに正規化する。正規化できない場合は空文字。
+
+    原則としてISBN-10に揃えるが、979で始まるISBN-13はISBN-13のまま返す。979は2007年に
+    追加されたプレフィックスで、ISBN-10の番号空間に対応する番号が存在しないため。
 
     isbnlibの ``to_isbn10()`` は先頭3文字が "978" かどうかだけでISBN-13と判断する。
     そのため "9784062577" のような978で始まる正当なISBN-10を渡すと、ISBN-13として
@@ -158,4 +159,9 @@ def to_isbn10(isbn: str) -> str:
     """
     if isbnlib.is_isbn10(isbn):
         return isbn
-    return isbnlib.to_isbn10(isbn)
+    converted = isbnlib.to_isbn10(isbn)
+    if converted:
+        return converted
+    if isbn.startswith("979") and isbnlib.is_isbn13(isbn):
+        return isbn
+    return ""
