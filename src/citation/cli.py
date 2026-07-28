@@ -91,7 +91,7 @@ def _run_parallel(
 @click.option(
     "-j",
     "--jobs",
-    type=int,
+    type=click.IntRange(min=1),
     default=None,
     help="並列数。既定はCPU数。1を指定すると逐次処理する",
 )
