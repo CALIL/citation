@@ -17,6 +17,7 @@ fetch と extract は冪等。ダンプがサイズもmd5も一致していれ�
 import base64
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -40,6 +41,9 @@ OFFICIAL_URL = "https://dumps.wikimedia.org/{wiki}/{date}/{name}"
 ARCHIVE_URL = "https://dumps.wikimedia.org/archive/{wiki}/{date}/{name}"
 GCS_URL = "https://storage.googleapis.com/isbn-citation/{name}"
 
+#: 有志が作ったtorrentの置き場。Meta-Wikiの Data dump torrents から辿れる。
+TORRENT_URL = "https://people.wikimedia.org/~samtar/public/dumps/{name}.torrent"
+
 #: 素の urllib のUser-Agentは dumps.wikimedia.org から403で弾かれる。Wikimediaの
 #: User-Agentポリシーに従って、連絡先の分かる名前を送る。
 USER_AGENT = "citation-backfill/1.0 (https://github.com/CALIL/citation; ryuuji@calil.jp)"
@@ -57,7 +61,8 @@ class Target:
 
     :param kind: 取得元。``ia`` はInternet Archive、``official`` は公式の通常ディレクトリ、
         ``archive`` は公式のヒストリカルアーカイブ、``gcs`` は過去に自分で保存した
-        `gs://isbn-citation`、``local`` はどこにも無く手元のファイルしか残っていないもの
+        `gs://isbn-citation`、``torrent`` は有志のtorrent（aria2cが必要）、
+        ``local`` はどこにも無く手元のファイルしか残っていないもの
     :param mode: ``multi`` はmultistream（ストリーム単位で並列処理できる）、``single`` は
         multistreamが無かった時代のダンプで逐次処理になる
     """
@@ -108,6 +113,8 @@ class Target:
             return ARCHIVE_URL.format(wiki=self.wiki, date=self.date, name=self.dump_name)
         if self.kind == "gcs":
             return GCS_URL.format(name=self.dump_name)
+        if self.kind == "torrent":
+            return TORRENT_URL.format(name=self.dump_name)
         return None
 
     @property
@@ -153,15 +160,23 @@ TARGETS: list[Target] = [
     Target(2021, "enwiki", "20210620", "ia", "multi"),
     Target(2022, "jawiki", "20220501", "ia", "multi"),
     Target(2022, "enwiki", "20220501", "ia", "multi"),
-    # 2024・2025のダンプは公式からもIAからも消えており、手元のファイルしか残っていない。
-    Target(2024, "jawiki", "20240401", "local", "multi"),
-    Target(2024, "enwiki", "20240401", "local", "multi"),
-    Target(2024, "jawiki", "20241201", "local", "multi", optional=True),
-    Target(2024, "enwiki", "20241201", "local", "multi", optional=True),
-    Target(2025, "jawiki", "20250601", "local", "multi"),
-    Target(2025, "enwiki", "20250601", "local", "multi"),
-    Target(2026, "jawiki", "20260401", "official", "multi"),
-    Target(2026, "enwiki", "20260401", "official", "multi"),
+    # 2023年はミラーが全滅しているが、20230820だけは有志（samtar）が全言語版の
+    # torrentを作って people.wikimedia.org に置いており、それが生きている。
+    # Meta-Wikiの一覧には英語版しか載っていないので、同じディレクトリを直接見る。
+    # 取得後にGCSへ控えを上げているので、再取得はそちらからでもよい。
+    Target(2023, "jawiki", "20230820", "torrent", "multi"),
+    Target(2023, "enwiki", "20230820", "torrent", "multi"),
+    # 2024年以降のダンプは公式からもIAからも消える（消えた）ため、処理したあとに
+    # gs://isbn-citation へ控えを上げてある。2026年分は公式にも残っているが、
+    # READMEのリンクが数か月で404になるのを避けるため控えの方を指す。
+    Target(2024, "jawiki", "20240401", "gcs", "multi"),
+    Target(2024, "enwiki", "20240401", "gcs", "multi"),
+    Target(2024, "jawiki", "20241201", "gcs", "multi", optional=True),
+    Target(2024, "enwiki", "20241201", "gcs", "multi", optional=True),
+    Target(2025, "jawiki", "20250601", "gcs", "multi"),
+    Target(2025, "enwiki", "20250601", "gcs", "multi"),
+    Target(2026, "jawiki", "20260401", "gcs", "multi"),
+    Target(2026, "enwiki", "20260401", "gcs", "multi"),
     # 既刊の非年次日付。IAに残っているものはIAから取る（下り課金がかからない）。
     Target(2020, "jawiki", "20201201", "ia", "multi", optional=True),
     Target(2021, "jawiki", "20210920", "ia", "multi", optional=True),
@@ -283,6 +298,30 @@ def _curl(url: str, path: Path, quiet: bool) -> None:
     subprocess.run(command, check=True)
 
 
+def _aria2(target: Target) -> None:
+    """torrentで取得する。全ピースのハッシュ照合はaria2cが行う。
+
+    Windowsなら公式のportable版（zipを展開するだけ）で足りる。PATHに置くか、
+    ARIA2C環境変数に実行ファイルの場所を指定する。
+    """
+    aria2 = os.environ.get("ARIA2C") or shutil.which("aria2c")
+    if aria2 is None:
+        raise click.ClickException(
+            "aria2cが見つかりません。https://github.com/aria2/aria2/releases から"
+            "取得してPATHに置くか、ARIA2C環境変数で場所を指定してください"
+        )
+    command = [
+        aria2,
+        f"--dir={ROOT}",
+        "--check-integrity=true",
+        # 取得できたら抜ける。控えはGCSに上げるので、種を持ち続ける必要はない。
+        "--seed-time=0",
+        "--bt-stop-timeout=1800",
+        target.url,
+    ]
+    subprocess.run(command, check=True)
+
+
 def _fetch(target: Target, quiet: bool = False) -> None:
     """ダンプを手元に用意する。既に完全なものがあれば何もしない。
 
@@ -299,6 +338,16 @@ def _fetch(target: Target, quiet: bool = False) -> None:
 
     if target.verified_path.exists():
         click.echo(f"| 照合済みのためスキップ: {target.dump_name}")
+        return
+
+    # torrentは公式のmd5sums.txtが消えた日付を拾うための手段なので、照合できるのは
+    # torrent内のピースハッシュだけ。aria2cが全ピースを検証したら印を付ける。
+    if target.kind == "torrent":
+        if not target.dump_path.exists():
+            _aria2(target)
+        digest = _local_md5(target.dump_path)
+        target.verified_path.write_text(digest + "\n", encoding="utf-8", newline="\n")
+        click.echo(f"| ピースハッシュで照合済み: {target.dump_name}")
         return
 
     size, expected = _remote_info(target)
