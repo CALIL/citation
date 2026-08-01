@@ -9,12 +9,16 @@ name: Actionsのセキュリティチェック
 #   artipacked            actions/checkout に persist-credentials: false を足してください
 #                         （checkout は既定で書き込み権限つきトークンを .git に残すため）
 #   excessive-permissions permissions: を必要最小限に絞ってください
-#   template-injection    ${{ }} を run: に直接書かず、env: 経由で渡してください
+#   template-injection    テンプレート式を run: に直接書かず、env: 経由で渡してください
 #
 # 個別に許容したい指摘がある場合は、その行に次のコメントを付けられます:
 #   # zizmor: ignore[ルール名]
 #
 # 詳細な説明: https://docs.zizmor.sh/audits/
+
+# 注意: このファイルの中に、テンプレート式の記法をリテラルで書かないこと。
+# 解説目的でも Actions がそれを式として評価しようとし、ワークフロー全体が
+# 起動できなくなる（ジョブが1つも作られず failure になる）。
 
 on:
   push:
@@ -65,7 +69,7 @@ jobs:
             echo "| \`unpinned-uses\` | サードパーティの \`uses:\` をコミットSHAで指定する（例: \`foo/bar@<SHA> # v1\`）|"
             echo "| \`artipacked\` | \`actions/checkout\` に \`persist-credentials: false\` を足す |"
             echo "| \`excessive-permissions\` | \`permissions:\` を必要な範囲まで絞る |"
-            echo "| \`template-injection\` | \`\${{ }}\` を \`run:\` に直書きせず \`env:\` 経由にする |"
+            echo "| \`template-injection\` | テンプレート式を \`run:\` に直書きせず \`env:\` 経由で渡す |"
             echo ""
             echo "意図的にその書き方をしている場合は、該当行に \`# zizmor: ignore[ルール名]\` を付けると除外できます。"
             echo ""
